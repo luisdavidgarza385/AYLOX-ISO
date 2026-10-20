@@ -489,8 +489,14 @@ const ayloxTickets = (function() {
       return [...SAMPLE_TICKETS];
     }
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+      localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(SAMPLE_TICKETS));
+      return [...SAMPLE_TICKETS];
     } catch {
+      localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(SAMPLE_TICKETS));
       return [...SAMPLE_TICKETS];
     }
   }
@@ -513,6 +519,18 @@ const ayloxTickets = (function() {
   // ----------------------------------------------------
 
   function openNewTicketModal(preselectedPlan = null) {
+    // Si el cliente ya tiene un ticket activo que no ha sido cerrado por el staff, abrir su chat directamente
+    const activeTicketId = localStorage.getItem('aylox_client_active_ticket_id');
+    if (activeTicketId && !currentStaffRole) {
+      const tickets = getTickets();
+      const existing = tickets.find(t => t.id === activeTicketId);
+      if (existing && existing.status !== 'resuelto') {
+        ayloxApp.showToast(`Tienes un ticket en atención (#${existing.id}). Solo el Staff puede cerrarlo. Abriendo tu chat...`, 'info');
+        openChatModal(existing.id);
+        return;
+      }
+    }
+
     const modal = document.getElementById('newTicketModal');
     if (!modal) return;
 
@@ -622,6 +640,9 @@ const ayloxTickets = (function() {
     tickets.unshift(newTicket);
     saveTickets(tickets);
 
+    // Guardar candado de ticket activo para el cliente (solo el staff puede cerrarlo)
+    localStorage.setItem('aylox_client_active_ticket_id', newTicket.id);
+
     knownTicketMessageCounts[newTicket.id] = newTicket.messages.length;
     notifyChange({ newTicket });
     requestNotificationPermission();
@@ -677,10 +698,29 @@ const ayloxTickets = (function() {
 
     currentActiveTicketId = ticketId;
 
+    // Si el staff abre un ticket que estaba "abierto", marcarlo "en_proceso" de inmediato
+    if (currentStaffRole && ticket.status === 'abierto') {
+      ticket.status = 'en_proceso';
+      ticket.assignedTo = currentStaffRole === 'dueno' ? '👑 Dueño Principal' : '🛡️ Vendedor';
+      saveTickets(tickets);
+      pushTicketToCloud(ticket);
+      notifyChange({ ticketId: ticket.id, status: 'en_proceso' });
+    }
+
     // Actualizar cabecera del chat
     document.getElementById('chatTicketTitle').textContent = `Ticket #${ticket.id}`;
     document.getElementById('chatPlanInfo').textContent = (ticket.plan || '').replace(/&#x2F;/g, '/');
     document.getElementById('chatDeviceInfo').textContent = (ticket.device || '').replace(/&#x2F;/g, '/');
+
+    const subEl = document.getElementById('chatTicketSub');
+    if (subEl) {
+      if (currentStaffRole) {
+        const cleanPhone = (ticket.customerPhone || '').replace(/\D/g, '');
+        subEl.innerHTML = `👤 <strong class="text-white">${ayloxSecurity.sanitize(ticket.customerName)}</strong> • 📱 <a href="https://wa.me/${cleanPhone}" target="_blank" class="text-aylox-green underline font-mono">${ayloxSecurity.sanitize(ticket.customerPhone)}</a>`;
+      } else {
+        subEl.textContent = `Atendiendo: Staff AYLOX IOS 24/7`;
+      }
+    }
 
     const statusBadge = document.getElementById('chatTicketStatusBadge');
     if (statusBadge) {
@@ -696,14 +736,17 @@ const ayloxTickets = (function() {
       }
     }
 
-    // Mostrar/Ocultar barra de respuestas rápidas si es staff
+    // Mostrar barra de respuestas rápidas y control de cierre solo si es staff
     const quickBar = document.getElementById('staffQuickResponsesBar');
     if (quickBar) {
-      if (currentStaffRole) {
-        quickBar.classList.remove('hidden');
-      } else {
-        quickBar.classList.add('hidden');
-      }
+      if (currentStaffRole) quickBar.classList.remove('hidden');
+      else quickBar.classList.add('hidden');
+    }
+
+    const staffControls = document.getElementById('chatStaffControls');
+    if (staffControls) {
+      if (currentStaffRole && ticket.status !== 'resuelto') staffControls.classList.remove('hidden');
+      else staffControls.classList.add('hidden');
     }
 
     renderChatMessages();
@@ -718,6 +761,66 @@ const ayloxTickets = (function() {
     const modal = document.getElementById('ticketChatModal');
     if (modal) modal.classList.add('hidden');
     currentActiveTicketId = null;
+    if (currentStaffRole) {
+      renderDashTickets();
+    }
+  }
+
+  // Cerrar y resolver ticket (Solo permitido para Dueño o Vendedor)
+  function closeAndResolveActiveTicket(ticketId = null) {
+    const targetId = ticketId || currentActiveTicketId;
+    if (!targetId) return;
+
+    if (!currentStaffRole) {
+      ayloxApp.showToast('Solo el Dueño o los Vendedores pueden cerrar tickets.', 'error');
+      return;
+    }
+
+    const tickets = getTickets();
+    const ticket = tickets.find(t => t.id === targetId);
+    if (!ticket) return;
+
+    if (ticket.status === 'resuelto') {
+      ayloxApp.showToast('Este ticket ya se encuentra cerrado.', 'info');
+      return;
+    }
+
+    ticket.status = 'resuelto';
+    const roleLabel = currentStaffRole === 'dueno' ? '👑 Dueño Principal' : '🛡️ Vendedor';
+    const closeMsg = {
+      id: 'm_' + Date.now(),
+      sender: 'system',
+      author: 'AYLOX SISTEMA',
+      text: `🔒 Ticket cerrado y marcado como RESUELTO por ${roleLabel}. Si necesitas activar otro certificado o nuevo dispositivo, ya puedes abrir un nuevo ticket en la web. ¡Muchas gracias por tu compra!`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    ticket.messages.push(closeMsg);
+
+    saveTickets(tickets);
+    pushTicketToCloud(ticket);
+    notifyChange({ ticketId: ticket.id, status: 'resuelto' });
+
+    // Liberar candado del cliente si este navegador tenía este ticket activo
+    if (localStorage.getItem('aylox_client_active_ticket_id') === ticket.id) {
+      localStorage.removeItem('aylox_client_active_ticket_id');
+    }
+
+    if (currentActiveTicketId === targetId) {
+      renderChatMessages();
+      const statusBadge = document.getElementById('chatTicketStatusBadge');
+      if (statusBadge) {
+        statusBadge.textContent = '⚪ RESUELTO';
+        statusBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-gray-500/20 text-gray-300 border border-gray-500/40';
+      }
+      const staffControls = document.getElementById('chatStaffControls');
+      if (staffControls) staffControls.classList.add('hidden');
+    }
+
+    renderDashTickets();
+    renderPublicTickets();
+
+    if (typeof ayloxSound !== 'undefined') ayloxSound.play('success');
+    ayloxApp.showToast(`Ticket #${ticket.id} cerrado. El cliente ya puede abrir un nuevo ticket.`, 'success');
   }
 
   function renderChatMessages() {
@@ -775,6 +878,22 @@ const ayloxTickets = (function() {
     }).join('');
 
     container.scrollTop = container.scrollHeight;
+
+    const input = document.getElementById('chatInputMessage');
+    const sendBtn = document.querySelector('#chatReplyForm button[type="submit"]');
+    if (input && sendBtn) {
+      if (ticket.status === 'resuelto' && !currentStaffRole) {
+        input.disabled = true;
+        input.placeholder = 'Ticket cerrado y resuelto por el Staff.';
+        sendBtn.disabled = true;
+        sendBtn.className = 'px-4 py-2.5 rounded-xl bg-gray-700 text-gray-400 font-bold text-sm cursor-not-allowed';
+      } else {
+        input.disabled = false;
+        input.placeholder = currentStaffRole ? 'Escribe una respuesta como Staff...' : 'Escribe tu mensaje aquí...';
+        sendBtn.disabled = false;
+        sendBtn.className = 'px-4 py-2.5 rounded-xl bg-aylox-green text-black hover:bg-aylox-greenhover font-bold text-sm transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,255,102,0.3)]';
+      }
+    }
   }
 
   function sendChatMessage(e) {
@@ -1231,14 +1350,20 @@ const ayloxTickets = (function() {
           <td class="p-3">${statusBadge}</td>
           <td class="p-3 text-[10px] text-gray-400 font-mono">${dateStr}</td>
           <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
-            <button onclick="ayloxTickets.openChatModal('${t.id}')" class="px-2.5 py-1 rounded-lg bg-aylox-green text-black font-bold text-[11px] hover:bg-aylox-greenhover shadow" title="Atender ticket en el chat">
-              <i class="fa-solid fa-comments mr-1"></i> Atender
+            <button onclick="ayloxTickets.openChatModal('${t.id}')" class="px-3 py-1.5 rounded-lg bg-aylox-green text-black font-bold text-xs hover:bg-aylox-greenhover transition inline-flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,255,102,0.3)]" title="Chatear con el cliente en tiempo real">
+              <i class="fa-solid fa-comments"></i>
+              <span>Chatear</span>
             </button>
-            <button onclick="ayloxTickets.updateTicketStatus('${t.id}', 'resuelto')" class="px-2 py-1 rounded-lg bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/30 text-[11px]" title="Marcar como resuelto">
-              <i class="fa-solid fa-check"></i>
-            </button>
+            ${t.status !== 'resuelto' ? `
+              <button onclick="ayloxTickets.closeAndResolveActiveTicket('${t.id}')" class="px-2.5 py-1.5 rounded-lg bg-aylox-card hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/40 text-xs font-bold transition inline-flex items-center gap-1" title="Cerrar ticket como resuelto">
+                <i class="fa-solid fa-check-double"></i>
+                <span class="hidden sm:inline">Cerrar</span>
+              </button>
+            ` : `
+              <span class="text-[10px] text-gray-500 font-mono px-2 py-1">Cerrado</span>
+            `}
             ${currentStaffRole === 'dueno' ? `
-              <button onclick="ayloxTickets.deleteTicket('${t.id}')" class="px-2 py-1 rounded-lg bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-[11px]" title="Eliminar ticket (Solo Dueños)">
+              <button onclick="ayloxTickets.deleteTicket('${t.id}')" class="px-2 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-xs transition inline-flex items-center" title="Eliminar ticket (Solo Dueños)">
                 <i class="fa-solid fa-trash"></i>
               </button>
             ` : ''}
@@ -1343,6 +1468,7 @@ const ayloxTickets = (function() {
     submitTicket,
     openChatModal,
     closeChatModal,
+    closeAndResolveActiveTicket,
     renderChatMessages,
     sendChatMessage,
     insertCannedResponse,

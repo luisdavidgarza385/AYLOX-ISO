@@ -1380,7 +1380,7 @@
   </div>
 
   <!-- 2. Modal: Live Ticket Chat Room (Customer & Staff Interactive Chat) -->
-  <div id="ticketChatModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div id="ticketChatModal" class="fixed inset-0 z-[70] hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
     <div class="bg-aylox-dark border-2 border-aylox-green/60 rounded-3xl max-w-2xl w-full h-[620px] flex flex-col shadow-[0_0_50px_rgba(0,255,102,0.3)] overflow-hidden">
       
       <!-- Chat Header -->
@@ -1399,10 +1399,18 @@
         </div>
 
         <div class="flex items-center space-x-2">
+          <!-- Staff Action: Cerrar Ticket (Solo visible para Dueños / Vendedores) -->
+          <div id="chatStaffControls" class="hidden flex items-center space-x-1.5">
+            <button type="button" onclick="ayloxTickets.closeAndResolveActiveTicket()" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-black border border-emerald-500/50 transition flex items-center gap-1 shadow" title="Cerrar ticket como resuelto">
+              <i class="fa-solid fa-check-double text-xs"></i>
+              <span>Cerrar Ticket</span>
+            </button>
+          </div>
+
           <!-- Direct WhatsApp Transfer Buttons to both owners -->
           <button onclick="ayloxTickets.exportCurrentTicketToWhatsapp('50232509982')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 hover:bg-green-500 text-white transition flex items-center gap-1.5 shadow" title="Enviar al Dueño (+502 3250 9982)">
             <i class="fa-brands fa-whatsapp text-sm"></i>
-            <span>WhatsApp Dueño 🇬🇹</span>
+            <span class="hidden sm:inline">WhatsApp Dueño 🇬🇹</span>
           </button>
           <button onclick="ayloxTickets.exportCurrentTicketToWhatsapp('584124020112')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 transition flex items-center gap-1 shadow" title="Enviar al Dueño (+58 412-4020112)">
             <i class="fa-brands fa-whatsapp text-sm"></i>
@@ -1504,7 +1512,7 @@
         <div>
           <label class="block text-xs font-semibold text-gray-300 mb-1">Contraseña de Seguridad:</label>
           <div class="relative">
-            <input type="password" id="staffPinInput" placeholder="Escribe tu contraseña" autocomplete="new-password" value="" maxlength="50" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-center font-mono text-base tracking-wider text-white focus:outline-none transition">
+            <input type="password" id="staffPinInput" placeholder="Escribe tu contraseña" onkeydown="if(event.key === 'Enter') ayloxTickets.loginStaff()" autocomplete="new-password" value="" maxlength="50" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-center font-mono text-base tracking-wider text-white focus:outline-none transition">
             <button type="button" onclick="ayloxTickets.toggleStaffPinVisibility()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white text-sm p-1">
               <i id="staffPinEyeIcon" class="fa-solid fa-eye"></i>
             </button>
