@@ -1,33 +1,37 @@
 /**
  * ===================================================
- * AYLOX IOS — TICKET ENGINE & MULTI-ROLE SYSTEM
+ * AYLOX IOS — TICKET ENGINE & MULTI-ROLE SYSTEM v4.0
  * ===================================================
  * Roles:
- * - 'cliente'  : Crea tickets, chatea en vivo, exporta a WhatsApp
- * - 'socio'    : Responde tickets, usa respuestas rápidas, cambia estados
- * - 'dueno'    : Control total, edita teléfonos, cuentas de pago y configuraciones
+ * - 'cliente'  : Crea tickets con Nombre y Apellido real, abre WhatsApp automáticamente
+ * - 'vendedor' : Visualiza tickets de clientes en tiempo real, responde y usa respuestas rápidas
+ * - 'dueno'    : Control Total (Administración, Roles, Cuentas de Pago, Firebase Cloud DB)
+ *
+ * Sincronización en la Nube:
+ * - Compatible con Google Firebase Realtime Database (100% Gratis)
+ * - Sincronización automática cada 4 segundos entre cualquier PC y Celular del mundo
  */
 
 const ayloxTickets = (function() {
   const STORAGE_KEY_TICKETS = 'aylox_tickets_db';
   const STORAGE_KEY_CONFIG = 'aylox_staff_config';
-  const STORAGE_KEY_SESSION = 'aylox_staff_session';
 
-  // Configuración predeterminada de teléfonos y cuentas
+  // Configuración predeterminada oficial de AYLOX IOS
   const DEFAULT_CONFIG = {
     owner1Name: 'Dueño 1 — AYLOX IOS',
-    owner1Phone: '584124020112',
+    owner1Phone: '584124020112',       // Dueño 1 (Venezuela)
     owner2Name: 'Dueño 2 — AYLOX IOS',
-    owner2Phone: '50232509982',
+    owner2Phone: '50232509982',        // Dueño 2 (Guatemala)
     owner3Name: 'Línea de Activación Rápida',
     owner3Phone: '50232509982',
-    binanceId: '1146199763',
-    paypal: 'https://paypal.me/davisiso',
-    pinOwner: '1111',
-    pinPartner: '2222'
+    binanceId: '1146199763',           // Binance Pay ID Real
+    paypal: 'https://paypal.me/davisiso', // PayPal Oficial
+    pinOwner: '1111',                  // PIN Maestro de Dueños
+    pinSeller: '3333',                 // PIN para Vendedores
+    firebaseUrl: ''                    // URL de Firebase Realtime Database
   };
 
-  // Tickets de demostración para que el sistema tenga vida desde el inicio
+  // Tickets de ejemplo iniciales
   const SAMPLE_TICKETS = [
     {
       id: 'AYL-8492',
@@ -37,27 +41,27 @@ const ayloxTickets = (function() {
       plan: 'Certificado VIP + Hack / Mod (Pack Completo)',
       status: 'en_proceso',
       createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      assignedTo: 'Dueño 1 (Venezuela)',
+      assignedTo: 'Dueño 2 (Guatemala)',
       messages: [
         {
           id: 'm1',
           sender: 'system',
           author: 'AYLOX BOT',
-          text: '¡Hola Santiago! Tu ticket fue recibido con éxito. Uno de los dos Dueños tomará tu caso de inmediato.',
+          text: '¡Hola Santiago Morales! Tu ticket fue registrado con éxito y enviado al WhatsApp del Dueño (+502 3250 9982).',
           time: 'Hace 45 min'
         },
         {
           id: 'm2',
           sender: 'client',
           author: 'Santiago Morales',
-          text: 'Buenas tardes, quiero comprar el certificado con el hack incluido para jugar sin riesgo de baneo en iOS 18.',
+          text: 'Buenas tardes, quiero comprar el pack completo con hack antibaneo para Free Fire en iPhone 15 Pro Max.',
           time: 'Hace 43 min'
         },
         {
           id: 'm3',
           sender: 'staff',
-          author: 'Dueño 1 (Venezuela)',
-          text: '¡Hola Santiago! Sí, nuestro pack completo de Certificado VIP + Hack/Mod incluye soporte antibaneo para iOS 18. Te dejamos los métodos de pago para activarlo de inmediato.',
+          author: 'Dueño 2 (Guatemala)',
+          text: '¡Hola Santiago! Sí, incluye menú VIP antibaneo y certificado 12 meses. Te dejamos los métodos oficiales de Binance y PayPal para activarlo.',
           time: 'Hace 38 min'
         }
       ]
@@ -70,20 +74,20 @@ const ayloxTickets = (function() {
       plan: 'Solo Certificado Apple Developer',
       status: 'abierto',
       createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-      assignedTo: 'Dueño 2 (Guatemala)',
+      assignedTo: 'Ventas AYLOX',
       messages: [
         {
           id: 'm1',
           sender: 'system',
           author: 'AYLOX BOT',
-          text: '¡Hola Mateo! Ticket registrado para Solo Certificado Apple Developer.',
+          text: '¡Hola Mateo Fernández! Ticket registrado para Solo Certificado Apple Developer.',
           time: 'Hace 15 min'
         },
         {
           id: 'm2',
           sender: 'client',
           author: 'Mateo Fernández',
-          text: 'Hola, solo me interesa el certificado porque ya tengo mis propias aplicaciones IPAs. ¿Cuánto tiempo tarda la activación?',
+          text: 'Hola, tengo una duda sobre la instalación de archivos .p12 y .mobileprovision.',
           time: 'Hace 14 min'
         }
       ]
@@ -92,11 +96,11 @@ const ayloxTickets = (function() {
 
   // Estado en memoria
   let currentActiveTicketId = null;
-  let currentStaffRole = null; // 'dueno' | 'socio' | null
+  let currentStaffRole = null; // 'dueno' | 'vendedor' | null
   let selectedAuthRole = 'dueno';
   let broadcastChannel = null;
 
-  // Inicializar BroadcastChannel para sincronizar en tiempo real entre ventanas
+  // BroadcastChannel para sincronizar en vivo entre pestañas del mismo navegador
   try {
     if (typeof BroadcastChannel !== 'undefined') {
       broadcastChannel = new BroadcastChannel('aylox_channel');
@@ -111,10 +115,9 @@ const ayloxTickets = (function() {
       };
     }
   } catch (e) {
-    console.warn('BroadcastChannel no soportado, usando sincronización estándar por Storage.', e);
+    console.warn('BroadcastChannel no soportado, usando almacenamiento estándar.', e);
   }
 
-  // Notificar cambios a otras pestañas
   function notifyChange() {
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'TICKETS_UPDATED', timestamp: Date.now() });
@@ -130,7 +133,7 @@ const ayloxTickets = (function() {
     }
     try {
       const parsed = JSON.parse(raw);
-      // Asegurar números y cuentas reales de los dueños
+      // Garantizar que los números y cuentas oficiales se mantengan
       if (parsed.owner1Phone === '5215500000000' || !parsed.owner1Phone) {
         parsed.owner1Phone = DEFAULT_CONFIG.owner1Phone;
         parsed.owner1Name = DEFAULT_CONFIG.owner1Name;
@@ -145,34 +148,161 @@ const ayloxTickets = (function() {
       if (parsed.paypal === 'pagos@ayloxios.com' || !parsed.paypal) {
         parsed.paypal = DEFAULT_CONFIG.paypal;
       }
+      if (!parsed.pinSeller) {
+        parsed.pinSeller = DEFAULT_CONFIG.pinSeller;
+      }
       return { ...DEFAULT_CONFIG, ...parsed };
     } catch {
       return { ...DEFAULT_CONFIG };
     }
   }
 
-  // Guardar configuración modificada
+  // Guardar configuración modificada (Solo Dueños)
   function saveStaffConfig() {
     if (currentStaffRole !== 'dueno') {
-      ayloxApp.showToast('Solo el Dueño Principal puede editar los números y cuentas', 'error');
+      ayloxApp.showToast('Solo el Dueño Principal puede editar ajustes y cuentas', 'error');
       return;
     }
 
     const cfg = getConfig();
-    cfg.owner1Phone = document.getElementById('cfgOwner1Phone').value.trim() || cfg.owner1Phone;
-    cfg.owner1Name = document.getElementById('cfgOwner1Name').value.trim() || cfg.owner1Name;
-    cfg.owner2Phone = document.getElementById('cfgOwner2Phone').value.trim() || cfg.owner2Phone;
-    cfg.owner2Name = document.getElementById('cfgOwner2Name').value.trim() || cfg.owner2Name;
-    cfg.owner3Phone = document.getElementById('cfgOwner3Phone').value.trim() || cfg.owner3Phone;
-    cfg.owner3Name = document.getElementById('cfgOwner3Name').value.trim() || cfg.owner3Name;
-    cfg.binanceId = document.getElementById('cfgBinanceId').value.trim() || cfg.binanceId;
-    cfg.paypal = document.getElementById('cfgPaypal').value.trim() || cfg.paypal;
+    if (document.getElementById('cfgOwner1Phone')) cfg.owner1Phone = document.getElementById('cfgOwner1Phone').value.trim() || cfg.owner1Phone;
+    if (document.getElementById('cfgOwner1Name')) cfg.owner1Name = document.getElementById('cfgOwner1Name').value.trim() || cfg.owner1Name;
+    if (document.getElementById('cfgOwner2Phone')) cfg.owner2Phone = document.getElementById('cfgOwner2Phone').value.trim() || cfg.owner2Phone;
+    if (document.getElementById('cfgOwner2Name')) cfg.owner2Name = document.getElementById('cfgOwner2Name').value.trim() || cfg.owner2Name;
+    if (document.getElementById('cfgOwner3Phone')) cfg.owner3Phone = document.getElementById('cfgOwner3Phone').value.trim() || cfg.owner3Phone;
+    if (document.getElementById('cfgOwner3Name')) cfg.owner3Name = document.getElementById('cfgOwner3Name').value.trim() || cfg.owner3Name;
+    if (document.getElementById('cfgBinanceId')) cfg.binanceId = document.getElementById('cfgBinanceId').value.trim() || cfg.binanceId;
+    if (document.getElementById('cfgPaypal')) cfg.paypal = document.getElementById('cfgPaypal').value.trim() || cfg.paypal;
+    if (document.getElementById('cfgOwnerPin')) cfg.pinOwner = document.getElementById('cfgOwnerPin').value.trim() || cfg.pinOwner;
+    if (document.getElementById('cfgSellerPin')) cfg.pinSeller = document.getElementById('cfgSellerPin').value.trim() || cfg.pinSeller;
 
     localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(cfg));
     ayloxApp.applyConfigToUI(cfg);
 
-    ayloxSecurity.logEvent('Configuración de teléfonos y cuentas actualizada por el Dueño Principal.');
+    ayloxSecurity.logEvent('Configuración general y roles actualizada por el Dueño.');
     ayloxApp.showToast('¡Configuración guardada correctamente!', 'success');
+  }
+
+  // Conectar y guardar URL de Firebase Realtime Database
+  function saveCloudDbUrl() {
+    const input = document.getElementById('cfgFirebaseUrl');
+    if (!input) return;
+
+    let url = input.value.trim().replace(/\/+$/, '');
+    if (!url) {
+      ayloxApp.showToast('Por favor ingresa la URL de tu base de datos Firebase', 'warning');
+      return;
+    }
+
+    if (!url.startsWith('http')) {
+      url = 'https://' + url;
+    }
+
+    const cfg = getConfig();
+    cfg.firebaseUrl = url;
+    localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(cfg));
+
+    updateCloudStatusBadge(true);
+    ayloxApp.showToast('¡Conectando con Google Firebase Realtime Database...', 'info');
+
+    // Sincronizar inmediatamente
+    syncFromCloud(true);
+  }
+
+  // Actualizar badge de estado de la nube
+  function updateCloudStatusBadge(isConnected) {
+    const badge = document.getElementById('cloudStatusBadge');
+    if (!badge) return;
+
+    if (isConnected) {
+      badge.textContent = '🟢 CONECTADO A GOOGLE FIREBASE';
+      badge.className = 'text-xs px-3.5 py-1 rounded-full font-mono font-bold bg-aylox-green/20 text-aylox-green border border-aylox-green/40 shadow-[0_0_10px_rgba(0,255,102,0.3)]';
+    } else {
+      badge.textContent = '🟡 SINCRONIZACIÓN LOCAL';
+      badge.className = 'text-xs px-3.5 py-1 rounded-full font-mono font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40';
+    }
+  }
+
+  // ----------------------------------------------------
+  // MOTOR DE SINCRONIZACIÓN EN LA NUBE (FIREBASE)
+  // ----------------------------------------------------
+
+  async function pushTicketToCloud(ticket) {
+    const cfg = getConfig();
+    if (!cfg.firebaseUrl) return;
+
+    try {
+      let baseUrl = cfg.firebaseUrl.trim().replace(/\/+$/, '');
+      if (!baseUrl.startsWith('http')) baseUrl = 'https://' + baseUrl;
+      const url = `${baseUrl}/tickets/${ticket.id}.json`;
+
+      await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticket)
+      });
+    } catch (e) {
+      console.warn('Error al subir ticket a Firebase:', e);
+    }
+  }
+
+  async function syncFromCloud(showFeedback = false) {
+    const cfg = getConfig();
+    if (!cfg.firebaseUrl) {
+      updateCloudStatusBadge(false);
+      return;
+    }
+
+    try {
+      let baseUrl = cfg.firebaseUrl.trim().replace(/\/+$/, '');
+      if (!baseUrl.startsWith('http')) baseUrl = 'https://' + baseUrl;
+      const url = `${baseUrl}/tickets.json`;
+
+      const res = await fetch(url);
+      if (!res.ok) {
+        updateCloudStatusBadge(false);
+        return;
+      }
+
+      const data = await res.json();
+      updateCloudStatusBadge(true);
+
+      if (!data) return;
+
+      let cloudTickets = [];
+      if (Array.isArray(data)) {
+        cloudTickets = data.filter(Boolean);
+      } else if (typeof data === 'object') {
+        cloudTickets = Object.values(data);
+      }
+
+      if (cloudTickets.length > 0) {
+        cloudTickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const localTickets = getTickets();
+        const prevCount = localTickets.length;
+
+        // Si llegó un ticket nuevo y estamos en el panel, alertar con sonido
+        if (cloudTickets.length > prevCount && currentStaffRole) {
+          if (typeof ayloxSound !== 'undefined') ayloxSound.play('alert');
+          ayloxApp.showToast(`🔔 ¡Nuevo ticket recibido de ${cloudTickets[0].customerName}!`, 'info');
+        }
+
+        localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(cloudTickets));
+        renderPublicTickets();
+        renderDashTickets();
+        if (currentActiveTicketId) {
+          renderChatMessages();
+        }
+
+        if (showFeedback) {
+          ayloxApp.showToast('¡Base de Datos sincronizada con la Nube con éxito!', 'success');
+        }
+      }
+    } catch (e) {
+      updateCloudStatusBadge(false);
+      console.warn('Error sincronizando con Firebase:', e);
+    }
   }
 
   // Obtener lista de tickets
@@ -197,14 +327,13 @@ const ayloxTickets = (function() {
     renderDashTickets();
   }
 
-  // Generador de ID amigable (#AYL-XXXX)
   function generateTicketId() {
     const num = Math.floor(1000 + Math.random() * 9000);
     return `AYL-${num}`;
   }
 
   // ----------------------------------------------------
-  // MANEJO DE MODALES
+  // FORMULARIO: CREACIÓN DE NUEVO TICKET
   // ----------------------------------------------------
 
   function openNewTicketModal(preselectedPlan = null) {
@@ -262,6 +391,22 @@ const ayloxTickets = (function() {
       return;
     }
 
+    // Validación estricta de Nombre y Apellido Real
+    const nameWords = name.trim().split(/\s+/).filter(w => w.length >= 2);
+    if (name.length < 4 || nameWords.length < 2 || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/.test(name)) {
+      ayloxApp.showToast('Por favor escribe tu Nombre y Apellido real completo (ejemplo: Carlos Mendoza) para registrar tu certificado Apple.', 'warning');
+      document.getElementById('ticketCustomerName').focus();
+      return;
+    }
+
+    // Validación de Teléfono WhatsApp con código de país
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 8) {
+      ayloxApp.showToast('Por favor escribe un número de WhatsApp real con código de país (ejemplo: +502 3250 9982).', 'warning');
+      document.getElementById('ticketCustomerPhone').focus();
+      return;
+    }
+
     const cleanDevice = device.replace(/&#x2F;/g, '/');
     const cleanPlan = plan.replace(/&#x2F;/g, '/');
 
@@ -273,13 +418,13 @@ const ayloxTickets = (function() {
       plan: cleanPlan,
       status: 'abierto',
       createdAt: new Date().toISOString(),
-      assignedTo: 'Dueño & Socios',
+      assignedTo: 'Equipo AYLOX IOS',
       messages: [
         {
           id: 'm_' + Date.now(),
           sender: 'system',
           author: 'AYLOX BOT OFICIAL',
-          text: `¡Hola ${name}! Tu ticket #${newTicket?.id || 'AYL'} ha sido registrado y enviado al WhatsApp del Dueño (+502 3250 9982). Aquí tienes tu sala de chat para seguimiento en tiempo real.`,
+          text: `¡Hola ${name}! Tu ticket ha sido registrado y enviado al WhatsApp del Dueño (+502 3250 9982). Puedes chatear aquí en tiempo real o continuar en WhatsApp.`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         },
         {
@@ -291,11 +436,15 @@ const ayloxTickets = (function() {
         }
       ]
     };
+
     newTicket.messages[0].text = `¡Hola ${name}! Tu ticket #${newTicket.id} ha sido registrado y enviado al WhatsApp del Dueño (+502 3250 9982). Aquí tienes tu sala de chat para seguimiento en tiempo real.`;
 
     const tickets = getTickets();
     tickets.unshift(newTicket);
     saveTickets(tickets);
+
+    // Subir a la nube si Firebase está configurado
+    pushTicketToCloud(newTicket);
 
     ayloxSecurity.logEvent(`Nuevo ticket ${newTicket.id} creado por ${name} (${cleanDevice})`);
     
@@ -311,11 +460,11 @@ const ayloxTickets = (function() {
 
     const waUrl = `https://wa.me/${cfg.owner2Phone}?text=${encodeURIComponent(waText)}`;
     
-    // Disparar WhatsApp al dueño inmediatamente
+    // Abrir WhatsApp al dueño de inmediato
     try {
       window.open(waUrl, '_blank');
     } catch (e) {
-      console.warn('Popup blocked, available via button', e);
+      console.warn('Popup de WhatsApp bloqueado por el navegador', e);
     }
 
     // Reset form y cerrar modal
@@ -323,7 +472,7 @@ const ayloxTickets = (function() {
     closeNewTicketModal();
 
     if (typeof ayloxSound !== 'undefined') ayloxSound.play('success');
-    ayloxApp.showToast(`¡Ticket #${newTicket.id} creado! Enviando información a tu WhatsApp...`, 'success');
+    ayloxApp.showToast(`¡Ticket #${newTicket.id} creado! Abriendo WhatsApp con el Dueño...`, 'success');
 
     // Abrir directamente la sala de chat de este ticket
     setTimeout(() => {
@@ -388,7 +537,6 @@ const ayloxTickets = (function() {
     currentActiveTicketId = null;
   }
 
-  // Renderizar mensajes dentro del modal de chat
   function renderChatMessages() {
     const container = document.getElementById('chatMessagesContainer');
     if (!container || !currentActiveTicketId) return;
@@ -400,7 +548,6 @@ const ayloxTickets = (function() {
     container.innerHTML = ticket.messages.map(msg => {
       let isSystem = msg.sender === 'system';
       let isStaff = msg.sender === 'staff';
-      let isClient = msg.sender === 'client';
 
       if (isSystem) {
         return `
@@ -444,11 +591,9 @@ const ayloxTickets = (function() {
       `;
     }).join('');
 
-    // Auto scroll al final
     container.scrollTop = container.scrollHeight;
   }
 
-  // Enviar mensaje en el chat
   function sendChatMessage(e) {
     e.preventDefault();
     if (!currentActiveTicketId) return;
@@ -468,11 +613,11 @@ const ayloxTickets = (function() {
 
     if (currentStaffRole === 'dueno') {
       senderType = 'staff';
-      authorName = '👑 Dueño Principal';
+      authorName = '👑 Dueño AYLOX';
       ticket.status = 'en_proceso';
-    } else if (currentStaffRole === 'socio') {
+    } else if (currentStaffRole === 'vendedor') {
       senderType = 'staff';
-      authorName = '🛡️ Socio Autorizado';
+      authorName = '🛡️ Vendedor Autorizado';
       ticket.status = 'en_proceso';
     }
 
@@ -487,30 +632,33 @@ const ayloxTickets = (function() {
     ticket.messages.push(newMsg);
     saveTickets(tickets);
 
+    // Subir mensaje a la nube
+    pushTicketToCloud(ticket);
+
     input.value = '';
     renderChatMessages();
     if (typeof ayloxSound !== 'undefined') ayloxSound.play('message');
 
-    // Si el mensaje fue enviado por el cliente y no hay staff atendiendo activamente en este instante,
-    // generar respuesta automatizada preliminar si es su segunda consulta
+    // Respuesta del bot si el cliente vuelve a escribir y no hay staff en este segundo
     if (senderType === 'client' && ticket.messages.length === 3) {
       setTimeout(() => {
         const autoReply = {
           id: 'm_' + Date.now(),
           sender: 'system',
           author: 'AYLOX NOTIFICACIÓN 24/7',
-          text: `Mensaje recibido. Tu ticket #${ticket.id} está en la bandeja prioritaria. Si deseas acelerar la entrega de tu certificado de inmediato, puedes tocar el botón "Pasar a WhatsApp" en la parte superior.`,
+          text: `Mensaje recibido. Tu ticket #${ticket.id} está en la bandeja prioritaria. Si deseas acelerar la entrega de tu certificado de inmediato, puedes tocar el botón "WhatsApp Dueño 🇬🇹" en la parte superior.`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         ticket.messages.push(autoReply);
         saveTickets(tickets);
+        pushTicketToCloud(ticket);
         renderChatMessages();
         if (typeof ayloxSound !== 'undefined') ayloxSound.play('alert');
       }, 1500);
     }
   }
 
-  // Respuestas rápidas automáticas para el Dueño y Socios
+  // Respuestas rápidas automáticas
   function insertCannedResponse(type) {
     if (!currentActiveTicketId || !currentStaffRole) return;
     const cfg = getConfig();
@@ -520,12 +668,11 @@ const ayloxTickets = (function() {
       text = `💳 *MÉTODOS DE PAGO OFICIALES AYLOX IOS*\n` +
              `• Binance Pay ID: ${cfg.binanceId} (USDT al instante)\n` +
              `• PayPal Oficial: ${cfg.paypal}\n` +
-             `• Transferencia Bancaria Directa: Solicita los datos de cuenta.\n` +
-             `Una vez realizado tu pago, envía tu comprobante a este chat o al WhatsApp oficial (+${cfg.owner2Phone}) para activar tu certificado de inmediato.`;
+             `Envía tu comprobante a este chat o al WhatsApp oficial (+${cfg.owner2Phone}) para activar tu certificado de inmediato.`;
     } else if (type === 'whatsapp') {
       text = `📲 *CONTINUEMOS POR WHATSAPP*\n` +
              `Hemos asignado tu ticket #${currentActiveTicketId} al WhatsApp del Dueño.\n` +
-             `Haz clic en el botón verde superior "Pasar a WhatsApp" o escríbenos directamente a: +${cfg.owner2Phone}`;
+             `Haz clic en el botón verde superior "WhatsApp Dueño 🇬🇹" o escríbenos directamente a: +${cfg.owner2Phone}`;
     } else if (type === 'instalacion') {
       text = `📦 *GUÍA RÁPIDA DE INSTALACIÓN AYLOX IOS*\n` +
              `1. Te enviaremos tu certificado (.p12 y .mobileprovision).\n` +
@@ -626,7 +773,7 @@ const ayloxTickets = (function() {
   }
 
   // ----------------------------------------------------
-  // AUTENTICACIÓN Y PORTAL DE DUEÑO & SOCIOS
+  // AUTENTICACIÓN Y ROLES (DUEÑO VS VENDEDOR)
   // ----------------------------------------------------
 
   function openStaffAuthModal() {
@@ -645,13 +792,16 @@ const ayloxTickets = (function() {
     selectedAuthRole = role;
     const btnOwner = document.getElementById('roleBtnOwner');
     const btnPartner = document.getElementById('roleBtnPartner');
+    const hint = document.getElementById('pinHintText');
 
     if (role === 'dueno') {
       btnOwner.className = 'py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2';
       btnPartner.className = 'py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2';
+      if (hint) hint.innerHTML = 'PIN Maestro por defecto: <strong>1111</strong> (Dueño)';
     } else {
       btnPartner.className = 'py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2';
       btnOwner.className = 'py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2';
+      if (hint) hint.innerHTML = 'PIN de Vendedor por defecto: <strong>3333</strong> (Ventas)';
     }
   }
 
@@ -661,11 +811,11 @@ const ayloxTickets = (function() {
 
     let authenticated = false;
 
-    if (selectedAuthRole === 'dueno' && pin === cfg.pinOwner) {
+    if (selectedAuthRole === 'dueno' && pin === (cfg.pinOwner || '1111')) {
       currentStaffRole = 'dueno';
       authenticated = true;
-    } else if (selectedAuthRole === 'socio' && pin === cfg.pinPartner) {
-      currentStaffRole = 'socio';
+    } else if (selectedAuthRole === 'vendedor' && pin === (cfg.pinSeller || '3333')) {
+      currentStaffRole = 'vendedor';
       authenticated = true;
     }
 
@@ -680,7 +830,7 @@ const ayloxTickets = (function() {
 
     openStaffDashboard();
     ayloxSecurity.logEvent(`Sesión iniciada con éxito como: ${currentStaffRole.toUpperCase()}`);
-    ayloxApp.showToast(`¡Bienvenido al Panel de Control (${currentStaffRole.toUpperCase()})!`, 'success');
+    ayloxApp.showToast(`¡Bienvenido al Panel de Control (${currentStaffRole === 'dueno' ? 'DUEÑO' : 'VENDEDOR'})!`, 'success');
   }
 
   function openStaffDashboard() {
@@ -688,17 +838,24 @@ const ayloxTickets = (function() {
     if (!modal) return;
 
     const badge = document.getElementById('staffRoleBadge');
-    if (badge) {
-      if (currentStaffRole === 'dueno') {
-        badge.textContent = '👑 DUEÑO PRINCIPAL (Acceso Maestro)';
+    const tabConfig = document.getElementById('tabBtnConfig');
+
+    if (currentStaffRole === 'dueno') {
+      if (badge) {
+        badge.textContent = '👑 DUEÑO PRINCIPAL (Control Maestro)';
         badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-aylox-green text-black';
-      } else {
-        badge.textContent = '🛡️ SOCIO AUTORIZADO (Gestión & Soporte)';
+      }
+      if (tabConfig) tabConfig.style.display = 'inline-block';
+    } else {
+      if (badge) {
+        badge.textContent = '🛡️ VENDEDOR AUTORIZADO (Atención & Ventas)';
         badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-yellow-400 text-black';
       }
+      // Ocultar pestaña de ajustes críticos a vendedores
+      if (tabConfig) tabConfig.style.display = 'none';
     }
 
-    // Cargar valores de configuración en los inputs
+    // Cargar valores en los inputs de configuración
     const cfg = getConfig();
     if (document.getElementById('cfgOwner1Phone')) document.getElementById('cfgOwner1Phone').value = cfg.owner1Phone;
     if (document.getElementById('cfgOwner1Name')) document.getElementById('cfgOwner1Name').value = cfg.owner1Name;
@@ -708,11 +865,19 @@ const ayloxTickets = (function() {
     if (document.getElementById('cfgOwner3Name')) document.getElementById('cfgOwner3Name').value = cfg.owner3Name;
     if (document.getElementById('cfgBinanceId')) document.getElementById('cfgBinanceId').value = cfg.binanceId;
     if (document.getElementById('cfgPaypal')) document.getElementById('cfgPaypal').value = cfg.paypal;
+    if (document.getElementById('cfgOwnerPin')) document.getElementById('cfgOwnerPin').value = cfg.pinOwner || '1111';
+    if (document.getElementById('cfgSellerPin')) document.getElementById('cfgSellerPin').value = cfg.pinSeller || '3333';
+    if (document.getElementById('cfgFirebaseUrl')) document.getElementById('cfgFirebaseUrl').value = cfg.firebaseUrl || '';
+
+    updateCloudStatusBadge(!!cfg.firebaseUrl);
 
     showDashboardTab('tickets');
     renderDashTickets();
 
     modal.classList.remove('hidden');
+
+    // Sincronizar desde la nube al abrir el dashboard
+    syncFromCloud();
   }
 
   function logoutStaff() {
@@ -723,7 +888,7 @@ const ayloxTickets = (function() {
   }
 
   function showDashboardTab(tabId) {
-    const tabs = ['tickets', 'config', 'security'];
+    const tabs = ['tickets', 'cloud', 'config', 'security'];
     tabs.forEach(t => {
       const el = document.getElementById(`dashTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (el) {
@@ -733,8 +898,8 @@ const ayloxTickets = (function() {
     });
 
     const buttons = document.querySelectorAll('.dash-tab');
-    buttons.forEach((btn, index) => {
-      if (tabs[index] === tabId) {
+    buttons.forEach((btn) => {
+      if (btn.getAttribute('onclick')?.includes(tabId)) {
         btn.classList.add('active-dash-tab');
         btn.classList.remove('text-gray-400');
       } else {
@@ -777,24 +942,35 @@ const ayloxTickets = (function() {
       }
 
       const dateStr = new Date(t.createdAt).toLocaleDateString() + ' ' + new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const cleanPhoneDigits = (t.customerPhone || '').replace(/\D/g, '');
+      const waDirectMsg = encodeURIComponent(`¡Hola ${t.customerName}! 👋 Te escribo del equipo oficial de AYLOX IOS sobre tu ticket #${t.id} para la activación de tu plan "${t.plan}".`);
 
       return `
         <tr class="hover:bg-aylox-card/40 transition">
           <td class="p-3 font-mono font-bold text-aylox-green">#${t.id}</td>
-          <td class="p-3 font-semibold text-white">${ayloxSecurity.sanitize(t.customerName)}</td>
-          <td class="p-3 font-mono">${ayloxSecurity.sanitize(t.customerPhone)}</td>
-          <td class="p-3"><span class="text-white">${ayloxSecurity.sanitize(t.device)}</span><br><span class="text-[10px] text-gray-400">${ayloxSecurity.sanitize(t.plan)}</span></td>
+          <td class="p-3 font-bold text-white text-sm">${ayloxSecurity.sanitize(t.customerName)}</td>
+          <td class="p-3 font-mono">
+            <span class="text-gray-300 block text-xs">${ayloxSecurity.sanitize(t.customerPhone)}</span>
+            <a href="https://wa.me/${cleanPhoneDigits}?text=${waDirectMsg}" target="_blank" class="mt-1 px-2 py-0.5 rounded bg-green-600/30 text-green-300 hover:bg-green-600 hover:text-white border border-green-500/40 text-[10px] font-bold transition inline-flex items-center gap-1 shadow">
+              <i class="fa-brands fa-whatsapp text-xs"></i>
+              <span>Abrir WhatsApp</span>
+            </a>
+          </td>
+          <td class="p-3">
+            <span class="text-white font-semibold">${ayloxSecurity.sanitize(t.device)}</span><br>
+            <span class="text-[10px] text-aylox-green font-mono">${ayloxSecurity.sanitize(t.plan)}</span>
+          </td>
           <td class="p-3">${statusBadge}</td>
           <td class="p-3 text-[10px] text-gray-400 font-mono">${dateStr}</td>
           <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
-            <button onclick="ayloxTickets.openChatModal('${t.id}')" class="px-2.5 py-1 rounded bg-aylox-green text-black font-bold text-[11px] hover:bg-aylox-greenhover" title="Atender ticket">
+            <button onclick="ayloxTickets.openChatModal('${t.id}')" class="px-2.5 py-1 rounded-lg bg-aylox-green text-black font-bold text-[11px] hover:bg-aylox-greenhover shadow" title="Atender ticket en el chat">
               <i class="fa-solid fa-comments mr-1"></i> Atender
             </button>
-            <button onclick="ayloxTickets.updateTicketStatus('${t.id}', 'resuelto')" class="px-2 py-1 rounded bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/30 text-[11px]" title="Marcar como resuelto">
+            <button onclick="ayloxTickets.updateTicketStatus('${t.id}', 'resuelto')" class="px-2 py-1 rounded-lg bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/30 text-[11px]" title="Marcar como resuelto">
               <i class="fa-solid fa-check"></i>
             </button>
             ${currentStaffRole === 'dueno' ? `
-              <button onclick="ayloxTickets.deleteTicket('${t.id}')" class="px-2 py-1 rounded bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-[11px]" title="Eliminar">
+              <button onclick="ayloxTickets.deleteTicket('${t.id}')" class="px-2 py-1 rounded-lg bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white text-[11px]" title="Eliminar ticket (Solo Dueños)">
                 <i class="fa-solid fa-trash"></i>
               </button>
             ` : ''}
@@ -811,6 +987,7 @@ const ayloxTickets = (function() {
 
     ticket.status = newStatus;
     saveTickets(tickets);
+    pushTicketToCloud(ticket);
 
     ayloxSecurity.logEvent(`Ticket ${ticketId} marcado como: ${newStatus}`);
     ayloxApp.showToast(`Estado del ticket #${ticketId} actualizado a ${newStatus}`, 'success');
@@ -828,7 +1005,19 @@ const ayloxTickets = (function() {
     tickets = tickets.filter(t => t.id !== ticketId);
     saveTickets(tickets);
 
-    ayloxSecurity.logEvent(`Ticket ${ticketId} eliminado por el Dueño Principal.`);
+    // Borrar de Firebase si está configurado
+    const cfg = getConfig();
+    if (cfg.firebaseUrl) {
+      try {
+        let baseUrl = cfg.firebaseUrl.trim().replace(/\/+$/, '');
+        if (!baseUrl.startsWith('http')) baseUrl = 'https://' + baseUrl;
+        fetch(`${baseUrl}/tickets/${ticketId}.json`, { method: 'DELETE' });
+      } catch (e) {
+        console.warn('Error borrando en Firebase:', e);
+      }
+    }
+
+    ayloxSecurity.logEvent(`Ticket ${ticketId} eliminado por el Dueño.`);
     ayloxApp.showToast(`Ticket #${ticketId} eliminado`, 'info');
   }
 
@@ -841,17 +1030,27 @@ const ayloxTickets = (function() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    ayloxApp.showToast('Respaldo descargado exitosamente', 'success');
+    ayloxApp.showToast('Copia de respaldo descargada', 'success');
   }
 
-  // Inicializar componentes al cargar
+  // Inicializar al cargar
   document.addEventListener('DOMContentLoaded', () => {
     renderPublicTickets();
+    
+    // Iniciar sondeo en segundo plano con la nube cada 4 segundos
+    setInterval(() => {
+      syncFromCloud();
+    }, 4000);
+
+    // Sincronización inicial
+    syncFromCloud();
   });
 
   return {
     getConfig,
     saveStaffConfig,
+    saveCloudDbUrl,
+    syncFromCloud,
     openNewTicketModal,
     closeNewTicketModal,
     submitTicket,

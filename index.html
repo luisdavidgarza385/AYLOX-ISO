@@ -770,93 +770,57 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
         <!-- Method 1: Binance Pay / USDT -->
-        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+        <div class="bg-aylox-card/80 border-2 border-aylox-cardborder hover:border-aylox-green/60 p-8 rounded-3xl flex flex-col justify-between group transition-all duration-300 shadow-[0_0_25px_rgba(0,255,102,0.1)]">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 flex items-center justify-center text-2xl mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 flex items-center justify-center text-3xl mb-5">
               <i class="fa-brands fa-bitcoin"></i>
             </div>
-            <h3 class="text-lg font-bold font-cyber text-white">Binance Pay & USDT</h3>
-            <p class="text-xs text-gray-400 mt-1">Cero comisiones. Acreditación automática al instante mediante Binance Pay ID oficial.</p>
+            <h3 class="text-2xl font-black font-cyber text-white">Binance Pay & USDT</h3>
+            <p class="text-xs text-gray-400 mt-2 leading-relaxed">Cero comisiones. Acreditación automática al instante mediante Binance Pay ID oficial sin esperas.</p>
             
-            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <span class="text-gray-300 font-mono text-[11px] truncate font-bold" id="displayBinanceId">Pay ID: 1146199763</span>
-              <button onclick="ayloxApp.copyText('1146199763', 'Binance Pay ID')" class="text-aylox-green hover:text-white p-1" title="Copiar ID">
+            <div class="mt-6 p-3 rounded-xl bg-aylox-black border border-aylox-cardborder flex items-center justify-between">
+              <span class="text-white font-mono text-sm font-bold" id="displayBinanceId">Pay ID: 1146199763</span>
+              <button onclick="ayloxApp.copyText('1146199763', 'Binance Pay ID')" class="text-aylox-green hover:text-white px-2 py-1 rounded bg-aylox-green/10 border border-aylox-green/30 text-xs font-bold transition flex items-center gap-1.5" title="Copiar ID">
                 <i class="fa-solid fa-copy"></i>
+                <span>Copiar</span>
               </button>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
+          <div class="mt-6 pt-4 border-t border-aylox-cardborder flex items-center justify-between text-xs text-gray-400">
             <span>Comisión: 0%</span>
-            <span class="text-aylox-green font-semibold">Instantáneo</span>
+            <span class="text-aylox-green font-bold flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-aylox-green animate-pulse"></span>
+              Acreditación Inmediata
+            </span>
           </div>
         </div>
 
         <!-- Method 2: PayPal -->
-        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+        <div class="bg-aylox-card/80 border-2 border-aylox-cardborder hover:border-aylox-green/60 p-8 rounded-3xl flex flex-col justify-between group transition-all duration-300 shadow-[0_0_25px_rgba(0,255,102,0.1)]">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center text-3xl mb-5">
               <i class="fa-brands fa-paypal"></i>
             </div>
-            <h3 class="text-lg font-bold font-cyber text-white">PayPal Oficial</h3>
-            <p class="text-xs text-gray-400 mt-1">Paga de forma rápida y protegida con tu cuenta PayPal o tarjeta internacional.</p>
+            <h3 class="text-2xl font-black font-cyber text-white">PayPal Oficial</h3>
+            <p class="text-xs text-gray-400 mt-2 leading-relaxed">Paga de forma rápida y protegida con tu cuenta PayPal o tarjeta internacional en un solo toque.</p>
             
-            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green hover:underline font-mono text-[11px] truncate font-bold" id="displayPaypal">paypal.me/davisiso</a>
-              <button onclick="ayloxApp.copyText('https://paypal.me/davisiso', 'Enlace de PayPal')" class="text-aylox-green hover:text-white p-1" title="Copiar Enlace">
+            <div class="mt-6 p-3 rounded-xl bg-aylox-black border border-aylox-cardborder flex items-center justify-between">
+              <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green hover:underline font-mono text-sm font-bold truncate" id="displayPaypal">paypal.me/davisiso</a>
+              <button onclick="ayloxApp.copyText('https://paypal.me/davisiso', 'Enlace de PayPal')" class="text-aylox-green hover:text-white px-2 py-1 rounded bg-aylox-green/10 border border-aylox-green/30 text-xs font-bold transition flex items-center gap-1.5" title="Copiar Enlace">
                 <i class="fa-solid fa-copy"></i>
+                <span>Copiar</span>
               </button>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
-            <span>Link Directo</span>
-            <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green font-semibold hover:underline">Abrir PayPal ↗</a>
-          </div>
-        </div>
-
-        <!-- Method 3: Transferencia Local / México & Colombia & Latam -->
-        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-2xl mb-4">
-              <i class="fa-solid fa-building-columns"></i>
-            </div>
-            <h3 class="text-lg font-bold font-cyber text-white">Bancos Locales & SPEI</h3>
-            <p class="text-xs text-gray-400 mt-1">Transferencias SPEI (México), Nequi / Bancolombia, PagoMóvil, Bizum España o transferencia bancaria.</p>
-            
-            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <span class="text-gray-300 font-mono text-[11px] truncate">Solicitar datos por WhatsApp</span>
-              <button onclick="ayloxApp.buyPlan('Solicitud de Cuenta Bancaria')" class="text-aylox-green hover:text-white p-1">
-                <i class="fa-brands fa-whatsapp"></i>
-              </button>
-            </div>
-          </div>
-          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
-            <span>Moneda local</span>
-            <span class="text-aylox-green font-semibold">Instantáneo</span>
-          </div>
-        </div>
-
-        <!-- Method 4: Criptomonedas / Tarjetas -->
-        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-2xl mb-4">
-              <i class="fa-solid fa-credit-card"></i>
-            </div>
-            <h3 class="text-lg font-bold font-cyber text-white">Cripto & Otras Monedas</h3>
-            <p class="text-xs text-gray-400 mt-1">Soporte para Litecoin (LTC), Solana, TRX y tarjetas prepagas virtuales sin papeleos.</p>
-            
-            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <span class="text-gray-300 font-mono text-[11px] truncate">LTC / SOL / Tron</span>
-              <button onclick="ayloxTickets.openNewTicketModal('Consulta de Métodos Cripto')" class="text-aylox-green hover:text-white p-1">
-                <i class="fa-solid fa-ticket"></i>
-              </button>
-            </div>
-          </div>
-          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
-            <span>Privacidad Total</span>
-            <span class="text-aylox-green font-semibold">1 Confirmación</span>
+          <div class="mt-6 pt-4 border-t border-aylox-cardborder flex items-center justify-between text-xs text-gray-400">
+            <span>Enlace Verificado</span>
+            <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green font-bold hover:underline flex items-center gap-1">
+              <span>Abrir PayPal</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
           </div>
         </div>
 
@@ -1207,14 +1171,16 @@
 
         <!-- Name -->
         <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Tu Nombre o Apodo:</label>
-          <input type="text" id="ticketCustomerName" required placeholder="Ej. Carlos Mendoza" maxlength="60" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Tu Nombre y Apellido Real:</label>
+          <input type="text" id="ticketCustomerName" required placeholder="Ej. Carlos Mendoza" minlength="4" maxlength="60" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+          <p class="text-[10px] text-gray-500 mt-1">Escribe tu nombre y apellido real para asociar tu certificado oficial de Apple.</p>
         </div>
 
         <!-- WhatsApp Phone -->
         <div>
           <label class="block text-xs font-semibold text-gray-300 mb-1">Tu WhatsApp de Contacto (con código de país):</label>
-          <input type="tel" id="ticketCustomerPhone" required placeholder="+52 55 1234 5678" maxlength="25" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+          <input type="tel" id="ticketCustomerPhone" required placeholder="+58 412 123 4567 o +502 3250 9982" maxlength="25" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+          <p class="text-[10px] text-gray-500 mt-1">Te contactaremos de inmediato a este WhatsApp con la entrega de tu certificado.</p>
         </div>
 
         <!-- Device Model -->
@@ -1400,7 +1366,7 @@
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <h3 class="text-xl font-black font-cyber text-white">PORTAL DE CONTROL STAFF</h3>
-        <p class="text-xs text-gray-400 mt-1">Acceso restringido para el Dueño Principal y Socios</p>
+        <p class="text-xs text-gray-400 mt-1">Acceso para Dueños y Vendedores Autorizados</p>
       </div>
 
       <div class="space-y-4">
@@ -1411,18 +1377,18 @@
               <i class="fa-solid fa-crown"></i>
               <span>👑 Dueño</span>
             </button>
-            <button type="button" id="roleBtnPartner" onclick="ayloxTickets.selectStaffRole('socio')" class="py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2">
+            <button type="button" id="roleBtnPartner" onclick="ayloxTickets.selectStaffRole('vendedor')" class="py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2">
               <i class="fa-solid fa-user-shield"></i>
-              <span>🛡️ Socio</span>
+              <span>🛡️ Vendedor</span>
             </button>
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-gray-300 mb-1">PIN de Seguridad:</label>
-          <input type="password" id="staffPinInput" placeholder="PIN de acceso (Ej: 1111)" maxlength="12" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white focus:outline-none transition">
-          <div class="text-[11px] text-gray-500 mt-1.5 text-center">
-            PIN por defecto: <strong>1111</strong> (Dueño) o <strong>2222</strong> (Socio)
+          <input type="password" id="staffPinInput" placeholder="PIN de acceso" maxlength="12" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white focus:outline-none transition">
+          <div class="text-[11px] text-gray-500 mt-1.5 text-center" id="pinHintText">
+            PIN por defecto: <strong>1111</strong> (Dueño) o <strong>3333</strong> (Vendedor)
           </div>
         </div>
 
@@ -1449,7 +1415,7 @@
               <span class="font-black font-cyber text-lg text-white">PANEL ADMINISTRATIVO AYLOX</span>
               <span id="staffRoleBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-aylox-green text-black">👑 DUEÑO PRINCIPAL</span>
             </div>
-            <div class="text-[11px] text-gray-400">Control de Tickets, Contactos, Métodos de Pago y Seguridad</div>
+            <div class="text-[11px] text-gray-400">Control de Tickets, Clientes, Base de Datos y Pagos</div>
           </div>
         </div>
 
@@ -1458,11 +1424,14 @@
           <button onclick="ayloxTickets.showDashboardTab('tickets')" class="dash-tab active-dash-tab px-3 py-1.5 rounded-lg text-xs font-bold transition">
             <i class="fa-solid fa-list-check mr-1"></i> Tickets (<span id="dashTicketsCount">0</span>)
           </button>
-          <button onclick="ayloxTickets.showDashboardTab('config')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
-            <i class="fa-solid fa-gears mr-1"></i> Configuración Teléfonos
+          <button onclick="ayloxTickets.showDashboardTab('cloud')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-cloud mr-1"></i> Base de Datos Nube
+          </button>
+          <button id="tabBtnConfig" onclick="ayloxTickets.showDashboardTab('config')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-gears mr-1"></i> Ajustes & Vendedores
           </button>
           <button onclick="ayloxTickets.showDashboardTab('security')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
-            <i class="fa-solid fa-shield mr-1"></i> Anti-Hack Shield
+            <i class="fa-solid fa-shield mr-1"></i> Anti-Hack
           </button>
           <button onclick="ayloxTickets.logoutStaff()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition ml-2">
             <i class="fa-solid fa-right-from-bracket"></i>
@@ -1511,8 +1480,80 @@
           </div>
         </div>
 
-        <!-- View 2: Configuración de Teléfonos y Cuentas -->
+        <!-- View 2: Base de Datos Nube (Google Firebase Realtime Database) -->
+        <div id="dashTabCloud" class="hidden space-y-6 max-w-3xl mx-auto">
+          <div class="bg-aylox-card/80 border-2 border-aylox-green/60 p-6 sm:p-8 rounded-3xl space-y-5 shadow-[0_0_30px_rgba(0,255,102,0.15)]">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-aylox-cardborder">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-2xl bg-aylox-green/20 text-aylox-green flex items-center justify-center text-2xl border border-aylox-green/30">
+                  <i class="fa-solid fa-cloud"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-black font-cyber text-white">BASE DE DATOS EN LA NUBE (TIEMPO REAL)</h3>
+                  <p class="text-xs text-gray-400">Sincroniza todos los tickets y mensajes entre celulares y computadoras en todo el mundo.</p>
+                </div>
+              </div>
+              <div id="cloudStatusBadge" class="text-xs px-3.5 py-1 rounded-full font-mono font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                🟡 SINCRONIZACIÓN LOCAL
+              </div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <label class="block text-xs font-semibold text-gray-200">URL de tu Base de Datos Firebase Realtime Database:</label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="cfgFirebaseUrl" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com" class="flex-1 bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:outline-none">
+                <button onclick="ayloxTickets.saveCloudDbUrl()" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <span>Conectar Nube</span>
+                </button>
+              </div>
+              <p class="text-[11px] text-gray-400">Al ingresar la URL, cualquier ticket que abra un cliente en cualquier país aparecerá aquí en tu pantalla en vivo al instante.</p>
+            </div>
+
+            <!-- Paso a Paso para activar Firebase Gratis -->
+            <div class="bg-aylox-dark border border-aylox-cardborder p-5 rounded-2xl space-y-3 text-xs">
+              <div class="font-bold text-aylox-green flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>¿Cómo activar tu Base de Datos Gratis en Google Firebase? (2 Minutos)</span>
+              </div>
+              <ol class="space-y-2.5 text-gray-300 list-decimal list-inside text-xs leading-relaxed">
+                <li>Entra a <a href="https://console.firebase.google.com" target="_blank" class="text-aylox-green underline font-bold">console.firebase.google.com</a> con cualquier cuenta de Google.</li>
+                <li>Haz clic en <strong>"Crear un proyecto"</strong> (ej: <code>aylox-ios</code>).</li>
+                <li>En el menú de la izquierda ve a <strong>Compilación > Realtime Database</strong> y haz clic en <strong>"Crear base de datos"</strong>.</li>
+                <li>Elige <strong>"Modo de prueba"</strong> (habilita lectura y escritura para tus clientes) y pulsa Activar.</li>
+                <li>Copia el enlace que te da Firebase arriba (ejemplo: <code>https://aylox-ios-default-rtdb.firebaseio.com</code>) y pégalo en la casilla de arriba. ¡Listo!</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 3: Configuración de Teléfonos y Cuentas -->
         <div id="dashTabConfig" class="hidden space-y-6 max-w-3xl mx-auto">
+          
+          <!-- Roles & PINs Configuration -->
+          <div class="bg-aylox-card/60 border border-aylox-cardborder p-6 rounded-2xl space-y-4">
+            <div class="flex items-center space-x-2 text-aylox-green font-bold text-sm">
+              <i class="fa-solid fa-user-lock"></i>
+              <span>CONFIGURACIÓN DE ROLES & PINES DE ACCESO</span>
+            </div>
+            <p class="text-xs text-gray-400">
+              Crea o modifica los códigos de acceso para tus vendedores. Los vendedores podrán ver los tickets y responder a clientes sin poder borrar información ni alterar tus pagos.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">👑 PIN Maestro Dueños:</label>
+                <input type="password" id="cfgOwnerPin" placeholder="1111" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none">
+                <span class="text-[10px] text-gray-500">Acceso total (Control maestro)</span>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">🛡️ PIN para Vendedores:</label>
+                <input type="password" id="cfgSellerPin" placeholder="3333" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none">
+                <span class="text-[10px] text-gray-500">Dale este PIN a tu equipo de ventas</span>
+              </div>
+            </div>
+          </div>
+
           <div class="bg-aylox-card/60 border border-aylox-cardborder p-6 rounded-2xl space-y-4">
             <div class="flex items-center space-x-2 text-aylox-green font-bold text-sm">
               <i class="fa-solid fa-phone"></i>
@@ -1545,7 +1586,7 @@
 
               <div>
                 <label class="block text-xs text-gray-300 mb-1 font-semibold">⚡ WhatsApp Soporte & Activación:</label>
-                <input type="text" id="cfgOwner3Phone" placeholder="584124020112" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                <input type="text" id="cfgOwner3Phone" placeholder="50232509982" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
               </div>
               <div>
                 <label class="block text-xs text-gray-300 mb-1 font-semibold">Nombre Visible Soporte:</label>
@@ -1564,11 +1605,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs text-gray-300 mb-1 font-semibold">Binance Pay ID:</label>
-                <input type="text" id="cfgBinanceId" placeholder="789421054" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                <input type="text" id="cfgBinanceId" placeholder="1146199763" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
               </div>
               <div>
-                <label class="block text-xs text-gray-300 mb-1 font-semibold">Correo PayPal:</label>
-                <input type="text" id="cfgPaypal" placeholder="pagos@ayloxios.com" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Enlace de PayPal:</label>
+                <input type="text" id="cfgPaypal" placeholder="https://paypal.me/davisiso" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
               </div>
             </div>
 
