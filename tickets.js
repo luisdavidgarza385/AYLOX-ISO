@@ -26,8 +26,8 @@ const ayloxTickets = (function() {
     owner3Phone: '50232509982',
     binanceId: '1146199763',           // Binance Pay ID Real
     paypal: 'https://paypal.me/davisiso', // PayPal Oficial
-    pinOwner: '1111',                  // PIN Maestro de Dueños
-    pinSeller: 'AYLOX IOS18',          // ContraseÃ±a oficial para Vendedores
+    pinOwner: 'AYLOX IOS18',           // Contraseña Oficial de Dueños
+    pinSeller: 'AYLOX IOS18',          // Contraseña Oficial de Vendedores
     firebaseUrl: 'https://aylox-iso-default-rtdb.firebaseio.com' // Tu Base de Datos Firebase Oficial
   };
 
@@ -288,6 +288,9 @@ const ayloxTickets = (function() {
       }
       if (parsed.paypal === 'pagos@ayloxios.com' || !parsed.paypal) {
         parsed.paypal = DEFAULT_CONFIG.paypal;
+      }
+      if (!parsed.pinOwner || parsed.pinOwner === '1111') {
+        parsed.pinOwner = 'AYLOX IOS18';
       }
       if (!parsed.pinSeller || parsed.pinSeller === '3333') {
         parsed.pinSeller = 'AYLOX IOS18';
@@ -993,11 +996,11 @@ const ayloxTickets = (function() {
     if (role === 'dueno') {
       btnOwner.className = 'py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2';
       btnPartner.className = 'py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2';
-      if (hint) hint.innerHTML = 'Contraseña Dueño: <strong>1111</strong> (o AYLOX IOS18)';
+      if (hint) hint.innerHTML = 'Contraseña Oficial Dueño: <strong class="text-aylox-green">AYLOX IOS18</strong>';
     } else {
       btnPartner.className = 'py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2';
       btnOwner.className = 'py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2';
-      if (hint) hint.innerHTML = 'Contraseña Vendedor 1: <strong class="text-aylox-green">AYLOX IOS18</strong>';
+      if (hint) hint.innerHTML = 'Contraseña Oficial Vendedor 1: <strong class="text-aylox-green">AYLOX IOS18</strong>';
     }
   }
 
@@ -1022,8 +1025,8 @@ const ayloxTickets = (function() {
 
     let authenticated = false;
 
-    // Variaciones aceptadas para Vendedor 1 (incluye AYLOX IOS18, AYLOX IOS 18, AYALYX, etc.)
-    const sellerVariants = [
+    // Variaciones oficiales aceptadas (AYLOX IOS18, AYLOX IOS 18, AYALYX, etc.)
+    const validVariants = [
       'aylox ios18',
       'aylox ios 18',
       'ayalyx ios18',
@@ -1033,46 +1036,26 @@ const ayloxTickets = (function() {
       'aylox18',
       'aylox',
       'ayalyx',
-      '3333',
       (cfg.pinSeller || '').toLowerCase().trim(),
-      (cfg.pinSeller || '').toLowerCase().replace(/\s+/g, '')
+      (cfg.pinSeller || '').toLowerCase().replace(/\s+/g, ''),
+      (cfg.pinOwner || '').toLowerCase().trim(),
+      (cfg.pinOwner || '').toLowerCase().replace(/\s+/g, '')
     ];
 
-    // Variaciones para Dueño
-    const ownerVariants = [
-      '1111',
-      'aylox ios18',
-      'aylox ios 18',
-      'ayalyx ios18',
-      'ayalyx ios 18',
-      (cfg.pinOwner || '').toLowerCase().trim()
-    ];
+    const isMatch = validVariants.includes(cleanPin) || validVariants.includes(compactPin) || rawPin === cfg.pinOwner || rawPin === cfg.pinSeller;
 
-    const isMatchSeller = sellerVariants.includes(cleanPin) || sellerVariants.includes(compactPin) || rawPin === cfg.pinSeller;
-    const isMatchOwner = ownerVariants.includes(cleanPin) || compactPin === '1111' || rawPin === cfg.pinOwner;
-
-    if (selectedAuthRole === 'dueno') {
-      if (isMatchOwner) {
+    if (isMatch) {
+      if (selectedAuthRole === 'dueno') {
         currentStaffRole = 'dueno';
-        authenticated = true;
-      } else if (isMatchSeller) {
+      } else {
         currentStaffRole = 'vendedor';
-        authenticated = true;
       }
-    } else {
-      // Vendedor 1 seleccionado
-      if (isMatchSeller) {
-        currentStaffRole = 'vendedor';
-        authenticated = true;
-      } else if (isMatchOwner && compactPin === '1111') {
-        currentStaffRole = 'dueno';
-        authenticated = true;
-      }
+      authenticated = true;
     }
 
     if (!authenticated) {
       ayloxSecurity.recordBlockedAttempt('Intento fallido de inicio de sesión en Portal Staff');
-      ayloxApp.showToast('Contraseña o PIN incorrecto. Acceso denegado.', 'error');
+      ayloxApp.showToast('Contraseña incorrecta. Acceso denegado.', 'error');
       return;
     }
 
@@ -1117,8 +1100,8 @@ const ayloxTickets = (function() {
     if (document.getElementById('cfgOwner3Name')) document.getElementById('cfgOwner3Name').value = cfg.owner3Name;
     if (document.getElementById('cfgBinanceId')) document.getElementById('cfgBinanceId').value = cfg.binanceId;
     if (document.getElementById('cfgPaypal')) document.getElementById('cfgPaypal').value = cfg.paypal;
-    if (document.getElementById('cfgOwnerPin')) document.getElementById('cfgOwnerPin').value = cfg.pinOwner || '1111';
-    if (document.getElementById('cfgSellerPin')) document.getElementById('cfgSellerPin').value = cfg.pinSeller || '3333';
+    if (document.getElementById('cfgOwnerPin')) document.getElementById('cfgOwnerPin').value = cfg.pinOwner || 'AYLOX IOS18';
+    if (document.getElementById('cfgSellerPin')) document.getElementById('cfgSellerPin').value = cfg.pinSeller || 'AYLOX IOS18';
     if (document.getElementById('cfgFirebaseUrl')) document.getElementById('cfgFirebaseUrl').value = cfg.firebaseUrl || '';
 
     updateCloudStatusBadge(!!cfg.firebaseUrl);
