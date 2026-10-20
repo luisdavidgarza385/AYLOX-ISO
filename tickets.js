@@ -28,7 +28,7 @@ const ayloxTickets = (function() {
     paypal: 'https://paypal.me/davisiso', // PayPal Oficial
     pinOwner: '1111',                  // PIN Maestro de Dueños
     pinSeller: '3333',                 // PIN para Vendedores
-    firebaseUrl: ''                    // URL de Firebase Realtime Database
+    firebaseUrl: 'https://aylox-iso-default-rtdb.firebaseio.com' // Tu Base de Datos Firebase Oficial
   };
 
   // Tickets de ejemplo iniciales
@@ -150,6 +150,9 @@ const ayloxTickets = (function() {
       }
       if (!parsed.pinSeller) {
         parsed.pinSeller = DEFAULT_CONFIG.pinSeller;
+      }
+      if (!parsed.firebaseUrl) {
+        parsed.firebaseUrl = DEFAULT_CONFIG.firebaseUrl;
       }
       return { ...DEFAULT_CONFIG, ...parsed };
     } catch {
