@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <!-- Security Headers (Client-side simulation) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <title>AYLOX IOS — Certificados VIP, Tweaks & Sistema de Tickets 24/7</title>
+  <meta name="description" content="AYLOX IOS: Certificados Apple VIP, repositorios exclusivos, instalación asistida sin revokes ni baneo. Atención personalizada 24/7 por Dueño y Socios con tickets interactivos.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpeg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            aylox: {
+              black: '#050a07',
+              dark: '#08120b',
+              card: '#0c1b11',
+              cardborder: '#153321',
+              green: '#00ff66',
+              greenhover: '#00dd55',
+              emerald: '#10b981',
+              glow: 'rgba(0, 255, 102, 0.4)',
+              neon: '#22c55e',
+              muted: '#7e9f8a',
+            }
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            cyber: ['Rajdhani', 'sans-serif'],
+          },
+          animation: {
+            'pulse-glow': 'pulseGlow 2.5s infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'scanline': 'scanline 8s linear infinite',
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 15px rgba(0, 255, 102, 0.25), 0 0 30px rgba(0, 255, 102, 0.1)' },
+              '50%': { boxShadow: '0 0 25px rgba(0, 255, 102, 0.6), 0 0 50px rgba(0, 255, 102, 0.25)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(1000%)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-aylox-black text-gray-100 font-sans antialiased overflow-x-hidden selection:bg-aylox-green selection:text-black min-h-screen relative">
+
+  <!-- Background Particle Canvas -->
+  <canvas id="cyberCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Cyber Grid Overlay -->
+  <div class="fixed inset-0 bg-[linear-gradient(to_right,#00ff6608_1px,transparent_1px),linear-gradient(to_bottom,#00ff6608_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0"></div>
+
+  <!-- Ambient Light Blooms -->
+  <div class="fixed -top-40 -left-40 w-96 h-96 bg-aylox-green/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
+  <div class="fixed top-1/2 -right-40 w-96 h-96 bg-aylox-emerald/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+
+  <!-- Top Sentinel Security & Live Status Bar -->
+  <div class="relative z-50 bg-aylox-dark/90 border-b border-aylox-cardborder text-xs py-1.5 px-4 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center space-x-3">
+        <span class="flex items-center text-aylox-green font-semibold">
+          <span class="w-2 h-2 rounded-full bg-aylox-green animate-ping inline-block mr-2"></span>
+          AYLOX SHIELD v3.4 ACTIVO
+        </span>
+        <span class="hidden sm:inline text-gray-500">|</span>
+        <span class="hidden sm:inline text-gray-400 font-cyber tracking-wider">
+          <i class="fa-solid fa-lock text-aylox-green mr-1"></i> SSL 256-BIT ENCRYPTION & ANTI-DDOS
+        </span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- Sound Toggle -->
+        <button id="soundToggleBtn" onclick="ayloxSound.toggle()" class="text-gray-400 hover:text-aylox-green transition flex items-center gap-1.5 text-xs py-0.5 px-2 rounded border border-aylox-cardborder hover:border-aylox-green/40">
+          <i id="soundIcon" class="fa-solid fa-volume-high text-aylox-green"></i>
+          <span id="soundText" class="hidden sm:inline">Sonido Cyber</span>
+        </button>
+
+        <!-- Staff Access Quick Button -->
+        <button onclick="ayloxTickets.openStaffAuthModal()" class="text-aylox-green hover:text-white transition flex items-center gap-1 text-xs py-0.5 px-2.5 rounded bg-aylox-green/10 border border-aylox-green/30 hover:bg-aylox-green/20">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Portal Dueño & Socios</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navbar -->
+  <header class="sticky top-0 z-40 bg-aylox-black/85 backdrop-blur-xl border-b border-aylox-cardborder/70 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo & Name -->
+      <a href="#inicio" class="flex items-center space-x-3.5 group">
+        <div class="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-aylox-green/60 shadow-[0_0_15px_rgba(0,255,102,0.3)] group-hover:border-aylox-green group-hover:scale-105 transition-all duration-300">
+          <img src="assets/logo.jpeg" alt="Logo AYLOX IOS" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-aylox-green/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-2xl font-black font-cyber tracking-wider text-white">AYLOX</span>
+            <span class="text-2xl font-black font-cyber tracking-wider text-aylox-green drop-shadow-[0_0_10px_rgba(0,255,102,0.8)]">IOS</span>
+          </div>
+          <span class="text-[10px] tracking-widest text-aylox-muted font-mono uppercase font-semibold">VIP Apple Architecture</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+        <a href="#inicio" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)]">Inicio</a>
+        <a href="#precios" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)]">Planes & Precios</a>
+        <a href="#seguridad" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)] flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-virus text-aylox-green text-xs"></i>
+          <span>Seguridad</span>
+        </a>
+        <a href="#pagos" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)]">Métodos de Pago</a>
+        <a href="#contacto" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)]">Dueños & Socios</a>
+        <a href="#faq" class="text-gray-300 hover:text-aylox-green transition hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.5)]">Preguntas</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden sm:flex items-center space-x-3">
+        <!-- Open Ticket CTA -->
+        <button onclick="ayloxTickets.openNewTicketModal()" class="relative group px-4 py-2.5 rounded-lg text-sm font-bold bg-aylox-card border border-aylox-green/50 text-aylox-green hover:bg-aylox-green hover:text-black transition-all duration-300 shadow-[0_0_12px_rgba(0,255,102,0.15)] hover:shadow-[0_0_20px_rgba(0,255,102,0.4)] flex items-center gap-2">
+          <i class="fa-solid fa-ticket"></i>
+          <span>Abrir Ticket 24/7</span>
+        </button>
+
+        <!-- Direct WhatsApp CTA -->
+        <a id="navWhatsappBtn" href="https://wa.me/5215500000000?text=Hola%20AYLOX%20IOS,%20quiero%20información%20sobre%20un%20certificado" target="_blank" class="px-4 py-2.5 rounded-lg text-sm font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition-all duration-300 shadow-[0_0_15px_rgba(0,255,102,0.4)] flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-base"></i>
+          <span>WhatsApp</span>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-aylox-green text-2xl focus:outline-none p-2" aria-label="Abrir menú">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-aylox-dark/95 border-b border-aylox-cardborder px-6 py-4 space-y-3 backdrop-blur-xl">
+      <a href="#inicio" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Inicio</a>
+      <a href="#precios" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Planes & Precios</a>
+      <a href="#seguridad" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Seguridad Anti-Hack</a>
+      <a href="#pagos" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Métodos de Pago</a>
+      <a href="#contacto" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Dueños & Socios</a>
+      <a href="#faq" onclick="ayloxApp.toggleMobileMenu()" class="block text-gray-300 hover:text-aylox-green py-1">Preguntas Frecuentes</a>
+      <div class="pt-3 border-t border-aylox-cardborder flex flex-col gap-2.5">
+        <button onclick="ayloxTickets.openNewTicketModal(); ayloxApp.toggleMobileMenu()" class="w-full py-2.5 rounded-lg text-sm font-bold bg-aylox-card border border-aylox-green/50 text-aylox-green flex items-center justify-center gap-2">
+          <i class="fa-solid fa-ticket"></i>
+          <span>Abrir Ticket 24/7</span>
+        </button>
+        <button onclick="ayloxTickets.openStaffAuthModal(); ayloxApp.toggleMobileMenu()" class="w-full py-2.5 rounded-lg text-sm font-bold bg-aylox-green/20 border border-aylox-green/40 text-aylox-green flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Portal Dueño & Socios</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="inicio" class="relative z-10 pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Column: Copy & Actions -->
+        <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+          
+          <!-- Badge -->
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-aylox-green/10 border border-aylox-green/40 text-aylox-green text-xs font-semibold tracking-wide uppercase">
+            <span class="w-2 h-2 rounded-full bg-aylox-green animate-pulse"></span>
+            <span>Certificados Apple VIP • Antibaneo 2026 • 100% Sin Revoke</span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black font-cyber tracking-tight leading-[1.08] text-white">
+            POTENCIA TU IPHONE AL <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-aylox-green via-emerald-400 to-green-300 drop-shadow-[0_0_20px_rgba(0,255,102,0.6)]">
+              MÁXIMO NIVEL VIP
+            </span>
+          </h1>
+
+          <!-- Description -->
+          <p class="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+            Instala aplicaciones modificadas, juegos ilimitados, emuladores y firmas IPAs sin restricciones de Apple. 
+            Garantía anti-revocación, instalación asistida y un <strong class="text-aylox-green font-semibold">sistema de tickets 24/7</strong> atendido directamente por el dueño y sus socios autorizados.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="#precios" class="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_25px_rgba(0,255,102,0.4)] flex items-center justify-center gap-3">
+              <i class="fa-solid fa-bolt text-lg"></i>
+              <span>Ver Planes & Precios</span>
+            </a>
+
+            <button onclick="ayloxTickets.openNewTicketModal()" class="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold bg-aylox-card/80 border border-aylox-green/40 text-white hover:text-aylox-green hover:border-aylox-green transition-all duration-300 backdrop-blur-md flex items-center justify-center gap-3">
+              <i class="fa-solid fa-headset text-aylox-green text-lg"></i>
+              <span>Abrir Ticket con Dueño</span>
+            </button>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
+            <div class="p-3 rounded-lg bg-aylox-card/40 border border-aylox-cardborder">
+              <div class="text-2xl font-black font-cyber text-aylox-green counter-value" data-target="15240">+15,200</div>
+              <div class="text-[11px] text-gray-400">Certificados Activos</div>
+            </div>
+            <div class="p-3 rounded-lg bg-aylox-card/40 border border-aylox-cardborder">
+              <div class="text-2xl font-black font-cyber text-aylox-green">99.9%</div>
+              <div class="text-[11px] text-gray-400">Protección Antibaneo</div>
+            </div>
+            <div class="p-3 rounded-lg bg-aylox-card/40 border border-aylox-cardborder">
+              <div class="text-2xl font-black font-cyber text-aylox-green">< 3 Min</div>
+              <div class="text-[11px] text-gray-400">Entrega Inmediata</div>
+            </div>
+            <div class="p-3 rounded-lg bg-aylox-card/40 border border-aylox-cardborder">
+              <div class="text-2xl font-black font-cyber text-aylox-green">24/7</div>
+              <div class="text-[11px] text-gray-400">Soporte Directo</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Interactive 3D Cyber Emblem with Logo -->
+        <div class="lg:col-span-5 flex justify-center relative">
+          <div class="relative w-72 h-72 sm:w-96 sm:h-96 flex items-center justify-center">
+            
+            <!-- Rotating Cyber Glow Rings -->
+            <div class="absolute inset-0 rounded-full border border-aylox-green/20 animate-spin" style="animation-duration: 25s;"></div>
+            <div class="absolute inset-4 rounded-full border border-dashed border-aylox-green/30 animate-spin" style="animation-duration: 35s; animation-direction: reverse;"></div>
+            <div class="absolute inset-8 rounded-full border-2 border-aylox-green/10"></div>
+            
+            <!-- Pulsing Holographic Core -->
+            <div class="absolute inset-12 rounded-3xl bg-gradient-to-tr from-aylox-dark via-aylox-card to-aylox-green/20 filter blur-xl opacity-60"></div>
+
+            <!-- Central Card with the User's Real Logo -->
+            <div class="relative z-10 w-56 h-56 sm:w-72 sm:h-72 rounded-3xl p-3 bg-aylox-dark/90 border-2 border-aylox-green/80 shadow-[0_0_40px_rgba(0,255,102,0.4)] backdrop-blur-2xl animate-float group">
+              <div class="w-full h-full rounded-2xl overflow-hidden relative">
+                <img src="assets/logo.jpeg" alt="AYLOX IOS Logo Oficial" class="w-full h-full object-cover">
+                <!-- Scanner Laser Line -->
+                <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-aylox-green to-transparent opacity-75 shadow-[0_0_10px_#00ff66] animate-scanline pointer-events-none"></div>
+              </div>
+
+              <!-- Corner Cyber Brackets -->
+              <div class="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-aylox-green"></div>
+              <div class="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-aylox-green"></div>
+              <div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-aylox-green"></div>
+              <div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-aylox-green"></div>
+
+              <!-- Floating Live Verified Badge -->
+              <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-aylox-black border border-aylox-green px-4 py-1.5 rounded-full text-xs font-bold text-aylox-green flex items-center space-x-1.5 shadow-[0_0_15px_rgba(0,255,102,0.3)] whitespace-nowrap">
+                <i class="fa-solid fa-circle-check text-aylox-green"></i>
+                <span>ORIGINAL AYLOX CERTIFIED</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Live Security Sentinel Section (Anti-Hack / Protection) -->
+  <section id="seguridad" class="relative z-10 py-16 bg-aylox-dark/60 border-y border-aylox-cardborder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-aylox-green/10 border border-aylox-green/30 text-aylox-green text-xs font-bold mb-3 uppercase tracking-wider">
+          <i class="fa-solid fa-shield-cat"></i>
+          <span>Arquitectura Blindada Anti-Hack</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black font-cyber text-white">
+          SISTEMA DE PROTECCIÓN & SEGURIDAD TOTAL
+        </h2>
+        <p class="text-gray-400 text-sm sm:text-base mt-2">
+          Diseñado con estándares cibernéticos de alta defensa para salvaguardar tu dinero, datos de contacto y la integridad de tus dispositivos.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Shield Card 1 -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition duration-300 relative group overflow-hidden">
+          <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+            <i class="fa-solid fa-shield-virus"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">Defensa Anti-DDoS & Spam</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Algoritmo de Rate Limiting con Token Bucket. Bloqueo instantáneo de bots maliciosos e inundaciones automáticas en formularios de tickets.
+          </p>
+          <div class="mt-4 text-[11px] text-aylox-green font-mono flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-aylox-green mr-2"></span>
+            Filtro de Tráfico Activo
+          </div>
+        </div>
+
+        <!-- Shield Card 2 -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition duration-300 relative group overflow-hidden">
+          <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">Sanitización Anti-XSS & Inyección</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Todos los mensajes de soporte y tickets pasan por un filtro criptográfico de escape HTML y sanitización antes de guardarse.
+          </p>
+          <div class="mt-4 text-[11px] text-aylox-green font-mono flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-aylox-green mr-2"></span>
+            Input Sanitizer Enabled
+          </div>
+        </div>
+
+        <!-- Shield Card 3 -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition duration-300 relative group overflow-hidden">
+          <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+            <i class="fa-solid fa-user-secret"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">Honeypot Bot Trap</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Campos trampa invisibles que detectan scrapers, spammers y crawlers ilegales, neutralizando cualquier intento de hackeo a la base de datos.
+          </p>
+          <div class="mt-4 text-[11px] text-aylox-green font-mono flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-aylox-green mr-2"></span>
+            Trampa Cibernética Armada
+          </div>
+        </div>
+
+        <!-- Shield Card 4 -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition duration-300 relative group overflow-hidden">
+          <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+            <i class="fa-solid fa-apple-whole"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">Certificados Apple Legítimos</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Cuentas Apple Developer oficiales. Cero archivos maliciosos ni troyanos. Instalación 100% limpia para iOS 15, 16, 17 y iOS 18.
+          </p>
+          <div class="mt-4 text-[11px] text-aylox-green font-mono flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-aylox-green mr-2"></span>
+            Sin Revocaciones Apple
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Interactive Shield Audit Box -->
+      <div class="mt-10 p-5 rounded-2xl bg-aylox-black/90 border border-aylox-green/30 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 rounded-lg bg-aylox-green/20 text-aylox-green flex items-center justify-center text-lg">
+            <i class="fa-solid fa-terminal"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-white font-cyber flex items-center gap-2">
+              <span>TELEMETRÍA DE SEGURIDAD EN TIEMPO REAL</span>
+              <span class="text-[10px] bg-aylox-green/20 text-aylox-green px-2 py-0.5 rounded border border-aylox-green/40">ONLINE</span>
+            </div>
+            <div class="text-xs text-gray-400" id="securityStatusLine">
+              Intentos neutralizados: <span class="text-aylox-green font-bold" id="blockedAttemptsCount">0</span> | Algoritmo Anti-Inyección: <span class="text-aylox-green font-bold">100% Blindado</span> | Red: <span class="text-aylox-green font-bold">Sin anomalías</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="ayloxSecurity.runDiagnostic()" class="px-4 py-2 rounded-lg text-xs font-bold bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Ejecutar Test Anti-Hack</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pricing Plans Section -->
+  <section id="precios" class="relative z-10 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-aylox-green/10 border border-aylox-green/30 text-aylox-green text-xs font-bold mb-3 uppercase tracking-wider">
+          <i class="fa-solid fa-tag"></i>
+          <span>Precios Transparentes & Garantía Total</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black font-cyber text-white">
+          ELIGE TU PLAN AYLOX IOS
+        </h2>
+        <p class="text-gray-300 text-sm sm:text-base mt-3">
+          Todos los paquetes incluyen acceso a repositorios exclusivos, firma ilimitada y contacto directo con el dueño y socios para activación en menos de 5 minutos.
+        </p>
+
+        <!-- Currency Selector Switcher -->
+        <div class="mt-6 inline-flex items-center p-1 rounded-xl bg-aylox-card border border-aylox-cardborder">
+          <span class="text-xs text-gray-400 font-semibold px-3">Moneda:</span>
+          <button onclick="ayloxApp.setCurrency('USD')" class="currency-btn active-currency px-3 py-1 rounded-lg text-xs font-bold transition">USD ($)</button>
+          <button onclick="ayloxApp.setCurrency('MXN')" class="currency-btn px-3 py-1 rounded-lg text-xs font-bold transition text-gray-400 hover:text-white">MXN ($)</button>
+          <button onclick="ayloxApp.setCurrency('COP')" class="currency-btn px-3 py-1 rounded-lg text-xs font-bold transition text-gray-400 hover:text-white">COP ($)</button>
+          <button onclick="ayloxApp.setCurrency('EUR')" class="currency-btn px-3 py-1 rounded-lg text-xs font-bold transition text-gray-400 hover:text-white">EUR (€)</button>
+        </div>
+      </div>
+
+      <!-- Pricing Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Plan 1: Básico -->
+        <div class="pricing-card bg-aylox-card/80 border border-aylox-cardborder hover:border-aylox-green/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,102,0.15)] relative">
+          <div>
+            <div class="text-xs font-bold font-cyber uppercase tracking-wider text-aylox-muted">Nivel Inicial</div>
+            <h3 class="text-2xl font-black font-cyber text-white mt-1">Certificado Básico</h3>
+            <p class="text-xs text-gray-400 mt-2">Para firmar tus aplicaciones favoritas y juegos sin jailbreak.</p>
+
+            <div class="my-6">
+              <span class="text-4xl font-black font-cyber text-white plan-price" data-usd="12" data-mxn="240" data-cop="49000" data-eur="11">$12</span>
+              <span class="text-xs text-gray-400 font-mono">/ Pago Único</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 border-t border-aylox-cardborder pt-4">
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>1 Dispositivo iPhone o iPad</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Firma ilimitada de archivos .IPA</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Garantía de 6 meses</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Compatibilidad ESign / Scarlet</span>
+              </li>
+              <li class="flex items-center gap-2 text-gray-500">
+                <i class="fa-solid fa-xmark text-gray-600 text-sm"></i>
+                <span>Instalación asistida por llamada</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-6 space-y-2">
+            <button onclick="ayloxApp.buyPlan('Certificado Básico ($12 USD)')" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-card border border-aylox-green/50 text-aylox-green hover:bg-aylox-green hover:text-black transition flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(0,255,102,0.1)]">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Comprar por WhatsApp</span>
+            </button>
+            <button onclick="ayloxTickets.openNewTicketModal('Certificado Básico ($12 USD)')" class="w-full py-2 rounded-xl text-[11px] font-semibold text-gray-400 hover:text-white transition">
+              Abrir Ticket para este Plan
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan 2: VIP PRO (Destacado) -->
+        <div class="pricing-card bg-gradient-to-b from-aylox-dark via-aylox-card to-aylox-dark border-2 border-aylox-green rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 shadow-[0_0_35px_rgba(0,255,102,0.25)] relative lg:-translate-y-2">
+          
+          <!-- Badge Más Vendido -->
+          <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-aylox-green text-black text-[11px] font-black uppercase tracking-wider px-4 py-1 rounded-full shadow-[0_0_15px_rgba(0,255,102,0.8)]">
+            ⭐ MÁS POPULAR & SEGURO
+          </div>
+
+          <div>
+            <div class="text-xs font-bold font-cyber uppercase tracking-wider text-aylox-green">Máxima Protección</div>
+            <h3 class="text-2xl font-black font-cyber text-white mt-1">VIP Pro Antibaneo</h3>
+            <p class="text-xs text-gray-300 mt-2">Certificado Apple Developer oficial con protección extrema anti-revokes.</p>
+
+            <div class="my-6">
+              <span class="text-5xl font-black font-cyber text-aylox-green plan-price" data-usd="22" data-mxn="440" data-cop="90000" data-eur="20">$22</span>
+              <span class="text-xs text-gray-400 font-mono">/ Pago Único</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-200 border-t border-aylox-green/30 pt-4">
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-aylox-green text-sm"></i>
+                <span class="font-bold text-white">Garantía Total 12 Meses</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-aylox-green text-sm"></i>
+                <span>Protección Antibaneo & No-Revoke</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-aylox-green text-sm"></i>
+                <span>Repositorios VIP de Juegos & Apps</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-aylox-green text-sm"></i>
+                <span>Archivos .p12 y .mobileprovision directos</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-aylox-green text-sm"></i>
+                <span>Atención prioritaria con Dueño</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-6 space-y-2">
+            <button onclick="ayloxApp.buyPlan('VIP Pro Antibaneo ($22 USD)')" class="w-full py-3.5 rounded-xl text-xs font-extrabold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,102,0.4)]">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Comprar VIP Inmediato</span>
+            </button>
+            <button onclick="ayloxTickets.openNewTicketModal('VIP Pro Antibaneo ($22 USD)')" class="w-full py-2 rounded-xl text-[11px] font-semibold text-aylox-green hover:underline transition">
+              Abrir Ticket Prioritario
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan 3: Pack Full Tweaks + Instalación Remota -->
+        <div class="pricing-card bg-aylox-card/80 border border-aylox-cardborder hover:border-aylox-green/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,102,0.15)] relative">
+          <div>
+            <div class="text-xs font-bold font-cyber uppercase tracking-wider text-aylox-muted">Todo Incluido</div>
+            <h3 class="text-2xl font-black font-cyber text-white mt-1">Pack Full Tweaks</h3>
+            <p class="text-xs text-gray-400 mt-2">Certificado VIP + configuración completa e instalación guiada en vivo.</p>
+
+            <div class="my-6">
+              <span class="text-4xl font-black font-cyber text-white plan-price" data-usd="35" data-mxn="700" data-cop="145000" data-eur="32">$35</span>
+              <span class="text-xs text-gray-400 font-mono">/ Pago Único</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 border-t border-aylox-cardborder pt-4">
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Certificado VIP 12 Meses incluido</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Instalación asistida por llamada/video</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Configuración de DNS Antibaneo</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Biblioteca de +500 IPAs Premium</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Soporte VIP directo por Socio</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-6 space-y-2">
+            <button onclick="ayloxApp.buyPlan('Pack Full Tweaks ($35 USD)')" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-card border border-aylox-green/50 text-aylox-green hover:bg-aylox-green hover:text-black transition flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(0,255,102,0.1)]">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Comprar por WhatsApp</span>
+            </button>
+            <button onclick="ayloxTickets.openNewTicketModal('Pack Full Tweaks ($35 USD)')" class="w-full py-2 rounded-xl text-[11px] font-semibold text-gray-400 hover:text-white transition">
+              Abrir Ticket para este Plan
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan 4: Membresía Socio / Revendedor -->
+        <div class="pricing-card bg-aylox-card/80 border border-aylox-cardborder hover:border-aylox-green/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,102,0.15)] relative">
+          <div>
+            <div class="text-xs font-bold font-cyber uppercase tracking-wider text-aylox-muted">Para Emprendedores</div>
+            <h3 class="text-2xl font-black font-cyber text-white mt-1">Pack Revendedor</h3>
+            <p class="text-xs text-gray-400 mt-2">Vende tus propios certificados con precios mayoristas y gana dinero.</p>
+
+            <div class="my-6">
+              <span class="text-4xl font-black font-cyber text-white plan-price" data-usd="75" data-mxn="1500" data-cop="310000" data-eur="69">$75</span>
+              <span class="text-xs text-gray-400 font-mono">/ Paquete</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 border-t border-aylox-cardborder pt-4">
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>10 Certificados con entrega inmediata</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Rol de Socio Autorizado en el panel</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Precios mayoristas desde $7 c/u</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Canal privado con el Dueño</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-aylox-green text-sm"></i>
+                <span>Material publicitario para redes</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-6 space-y-2">
+            <button onclick="ayloxApp.buyPlan('Pack Revendedor ($75 USD)')" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-card border border-aylox-green/50 text-aylox-green hover:bg-aylox-green hover:text-black transition flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(0,255,102,0.1)]">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Consultar con Dueño</span>
+            </button>
+            <button onclick="ayloxTickets.openNewTicketModal('Pack Revendedor ($75 USD)')" class="w-full py-2 rounded-xl text-[11px] font-semibold text-gray-400 hover:text-white transition">
+              Abrir Ticket de Negocios
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Ticket & Support 24/7 Section -->
+  <section id="soporte" class="relative z-10 py-20 bg-aylox-dark/40 border-y border-aylox-cardborder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Column: Explanation of the Ticket System -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-aylox-green/10 border border-aylox-green/40 text-aylox-green text-xs font-bold uppercase tracking-wider">
+            <i class="fa-solid fa-ticket"></i>
+            <span>SISTEMA DE TICKETS INTEGRADO 24/7</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl font-black font-cyber text-white leading-tight">
+            ATENCIÓN DIRECTA CON EL <span class="text-aylox-green">DUEÑO Y SUS SOCIOS</span>
+          </h2>
+
+          <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+            Olvídate de esperar horas o hablar con bots impersonales. En AYLOX IOS abres un ticket en la web y nuestro sistema asigna a un <strong class="text-white">socio o al dueño principal</strong> en tiempo real.
+          </p>
+
+          <div class="space-y-3.5 pt-2">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-aylox-green/20 text-aylox-green flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fa-solid fa-headset text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Pregunta precios y dudas técnicas</h4>
+                <p class="text-xs text-gray-400">Te enviamos al instante la información y opciones para tu modelo exacto de iPhone.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-aylox-green/20 text-aylox-green flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fa-solid fa-credit-card text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Respuestas Rápidas con Métodos de Pago</h4>
+                <p class="text-xs text-gray-400">El socio te envía las cuentas oficiales de Binance, PayPal o transferencia local con 1 solo clic.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-aylox-green/20 text-aylox-green flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Pasa tu ticket a WhatsApp en 1 toque</h4>
+                <p class="text-xs text-gray-400">Si prefieres continuar en WhatsApp, el ticket genera un reporte listo para enviar y realizar la instalación.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 flex flex-wrap gap-3">
+            <button onclick="ayloxTickets.openNewTicketModal()" class="px-6 py-3 rounded-xl text-sm font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+              <i class="fa-solid fa-plus-circle"></i>
+              <span>Crear Nuevo Ticket</span>
+            </button>
+            
+            <button onclick="ayloxTickets.openStaffAuthModal()" class="px-5 py-3 rounded-xl text-sm font-bold bg-aylox-card border border-aylox-cardborder hover:border-aylox-green text-white transition flex items-center gap-2">
+              <i class="fa-solid fa-user-shield text-aylox-green"></i>
+              <span>Acceso Socios / Dueño</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Interactive Live Ticket Simulator & History -->
+        <div class="lg:col-span-7">
+          <div class="bg-aylox-black border border-aylox-cardborder rounded-2xl shadow-2xl overflow-hidden">
+            
+            <!-- Ticket Terminal Header -->
+            <div class="bg-aylox-dark border-b border-aylox-cardborder px-5 py-3.5 flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="flex space-x-1.5">
+                  <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-aylox-green inline-block"></span>
+                </span>
+                <span class="text-xs font-mono font-bold text-gray-300">AYLOX TICKET LIVE SYSTEM</span>
+              </div>
+              <div class="text-[11px] font-mono text-aylox-green flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-aylox-green animate-ping"></span>
+                <span>SERVIDOR CONECTADO</span>
+              </div>
+            </div>
+
+            <!-- Ticket Stats Bar -->
+            <div class="grid grid-cols-3 bg-aylox-card/40 border-b border-aylox-cardborder text-center py-2.5 px-4 text-xs">
+              <div>
+                <span class="text-gray-400 block text-[10px]">TICKETS ACTIVOS</span>
+                <span class="text-white font-bold font-mono" id="statOpenTickets">3</span>
+              </div>
+              <div class="border-x border-aylox-cardborder">
+                <span class="text-gray-400 block text-[10px]">STAFF EN LÍNEA</span>
+                <span class="text-aylox-green font-bold font-mono">1 DUEÑO • 2 SOCIOS</span>
+              </div>
+              <div>
+                <span class="text-gray-400 block text-[10px]">TIEMPO RESPUESTA</span>
+                <span class="text-aylox-green font-bold font-mono">< 1 Min</span>
+              </div>
+            </div>
+
+            <!-- Active Public Tickets Preview List -->
+            <div class="p-4 space-y-3 max-h-96 overflow-y-auto" id="publicTicketsContainer">
+              <!-- Loaded dynamically by tickets.js -->
+            </div>
+
+            <!-- Ticket Terminal Footer CTA -->
+            <div class="p-4 bg-aylox-dark/80 border-t border-aylox-cardborder flex items-center justify-between text-xs">
+              <span class="text-gray-400">¿Tienes una duda antes de comprar?</span>
+              <button onclick="ayloxTickets.openNewTicketModal()" class="text-aylox-green hover:underline font-bold flex items-center gap-1">
+                <span>Abrir mi propio ticket</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Payment Methods Section -->
+  <section id="pagos" class="relative z-10 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-aylox-green/10 border border-aylox-green/30 text-aylox-green text-xs font-bold mb-3 uppercase tracking-wider">
+          <i class="fa-solid fa-wallet"></i>
+          <span>Transacciones Seguras</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black font-cyber text-white">
+          MÉTODOS DE PAGO DISPONIBLES
+        </h2>
+        <p class="text-gray-400 text-sm sm:text-base mt-2">
+          Aceptamos transferencias y métodos globales con verificación inmediata para activar tu certificado sin esperas.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Method 1: Binance Pay / USDT -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-brands fa-bitcoin"></i>
+            </div>
+            <h3 class="text-lg font-bold font-cyber text-white">Binance Pay & USDT</h3>
+            <p class="text-xs text-gray-400 mt-1">Cero comisiones. Acreditación automática al instante mediante Binance Pay ID o red TRC20/BEP20.</p>
+            
+            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
+              <span class="text-gray-300 font-mono text-[11px] truncate" id="displayBinanceId">Pay ID: 789421054</span>
+              <button onclick="ayloxApp.copyText('789421054', 'Binance Pay ID')" class="text-aylox-green hover:text-white p-1" title="Copiar ID">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
+            <span>Comisión: 0%</span>
+            <span class="text-aylox-green font-semibold">Inmediato</span>
+          </div>
+        </div>
+
+        <!-- Method 2: PayPal -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-brands fa-paypal"></i>
+            </div>
+            <h3 class="text-lg font-bold font-cyber text-white">PayPal Internacional</h3>
+            <p class="text-xs text-gray-400 mt-1">Paga de forma protegida con saldo PayPal o tarjetas de débito/crédito internacionales.</p>
+            
+            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
+              <span class="text-gray-300 font-mono text-[11px] truncate" id="displayPaypal">pagos@ayloxios.com</span>
+              <button onclick="ayloxApp.copyText('pagos@ayloxios.com', 'Correo de PayPal')" class="text-aylox-green hover:text-white p-1" title="Copiar Correo">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
+            <span>Modo: Amigos/Familia</span>
+            <span class="text-aylox-green font-semibold">1-5 min</span>
+          </div>
+        </div>
+
+        <!-- Method 3: Transferencia Local / México & Colombia & Latam -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-aylox-green/10 border border-aylox-green/30 text-aylox-green flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <h3 class="text-lg font-bold font-cyber text-white">Bancos Locales & SPEI</h3>
+            <p class="text-xs text-gray-400 mt-1">Transferencias SPEI (México), Nequi / Bancolombia, PagoMóvil, Bizum España o transferencia bancaria.</p>
+            
+            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
+              <span class="text-gray-300 font-mono text-[11px] truncate">Solicitar datos por WhatsApp</span>
+              <button onclick="ayloxApp.buyPlan('Solicitud de Cuenta Bancaria')" class="text-aylox-green hover:text-white p-1">
+                <i class="fa-brands fa-whatsapp"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
+            <span>Moneda local</span>
+            <span class="text-aylox-green font-semibold">Instantáneo</span>
+          </div>
+        </div>
+
+        <!-- Method 4: Criptomonedas / Tarjetas -->
+        <div class="bg-aylox-card/70 border border-aylox-cardborder p-6 rounded-2xl flex flex-col justify-between group hover:border-aylox-green/50 transition">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <h3 class="text-lg font-bold font-cyber text-white">Cripto & Otras Monedas</h3>
+            <p class="text-xs text-gray-400 mt-1">Soporte para Litecoin (LTC), Solana, TRX y tarjetas prepagas virtuales sin papeleos.</p>
+            
+            <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
+              <span class="text-gray-300 font-mono text-[11px] truncate">LTC / SOL / Tron</span>
+              <button onclick="ayloxTickets.openNewTicketModal('Consulta de Métodos Cripto')" class="text-aylox-green hover:text-white p-1">
+                <i class="fa-solid fa-ticket"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
+            <span>Privacidad Total</span>
+            <span class="text-aylox-green font-semibold">1 Confirmación</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Owners & Partners Contact Section -->
+  <section id="contacto" class="relative z-10 py-20 bg-aylox-dark/60 border-t border-aylox-cardborder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-aylox-green/10 border border-aylox-green/30 text-aylox-green text-xs font-bold mb-3 uppercase tracking-wider">
+          <i class="fa-solid fa-users"></i>
+          <span>Líneas Directas de Contacto</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black font-cyber text-white">
+          NÚMEROS OFICIALES DE DUEÑO & SOCIOS
+        </h2>
+        <p class="text-gray-400 text-sm sm:text-base mt-2">
+          Para tu máxima seguridad, solo contacta a través de los números verificados en esta página. Nadie de nuestro equipo te pedirá contraseñas personales de iCloud.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="ownersCardsContainer">
+        
+        <!-- Card 1: DUEÑO PRINCIPAL -->
+        <div class="bg-gradient-to-b from-aylox-card to-aylox-black border-2 border-aylox-green/60 hover:border-aylox-green p-6 rounded-2xl shadow-[0_0_30px_rgba(0,255,102,0.15)] flex flex-col justify-between transition-all duration-300 relative group">
+          <div class="absolute -top-3 right-6 bg-aylox-green text-black text-[10px] font-black uppercase px-3 py-0.5 rounded-full shadow">
+            👑 PROPIETARIO
+          </div>
+
+          <div>
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-14 h-14 rounded-2xl overflow-hidden border border-aylox-green shadow-[0_0_10px_rgba(0,255,102,0.3)]">
+                <img src="assets/logo.jpeg" alt="Dueño AYLOX" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h3 class="text-lg font-bold font-cyber text-white" id="owner1Name">Dueño Principal AYLOX</h3>
+                <span class="text-xs text-aylox-green font-semibold">Administración & Ventas VIP</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Atención directa para altas de certificados, paquetes de revendedor, dudas corporativas y resolución de tickets prioritarios.
+            </p>
+
+            <div class="mt-5 p-3 rounded-xl bg-aylox-dark border border-aylox-cardborder">
+              <div class="text-[10px] text-gray-500 uppercase font-mono">Número WhatsApp Verificado</div>
+              <div class="text-base font-bold font-mono text-white mt-0.5" id="owner1PhoneDisplay">+52 1 55 0000 0000</div>
+              <div class="text-[11px] text-aylox-green flex items-center gap-1.5 mt-1">
+                <span class="w-2 h-2 rounded-full bg-aylox-green animate-pulse"></span>
+                <span>En Línea para Instalaciones</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-6">
+            <a id="owner1WhatsappBtn" href="https://wa.me/5215500000000?text=Hola%20Dueño%20AYLOX%20IOS,%20te%20escribo%20desde%20la%20web%20oficial" target="_blank" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+              <span>Escribir al Dueño</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: SOCIO 1 (Soporte & Instalaciones) -->
+        <div class="bg-gradient-to-b from-aylox-card to-aylox-black border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition-all duration-300 flex flex-col justify-between relative group">
+          <div class="absolute -top-3 right-6 bg-aylox-card border border-aylox-green/40 text-aylox-green text-[10px] font-bold uppercase px-3 py-0.5 rounded-full">
+            🛡️ SOCIO TÉCNICO
+          </div>
+
+          <div>
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-14 h-14 rounded-2xl overflow-hidden border border-aylox-cardborder bg-aylox-dark flex items-center justify-center text-aylox-green text-2xl">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold font-cyber text-white" id="owner2Name">Socio Soporte & Instalación</h3>
+                <span class="text-xs text-gray-400 font-semibold">Técnico Certificado iOS</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Asistencia personalizada paso a paso para firmar con Scarlet, ESign, TrollStore, instalación de perfiles y resolución de errores.
+            </p>
+
+            <div class="mt-5 p-3 rounded-xl bg-aylox-dark border border-aylox-cardborder">
+              <div class="text-[10px] text-gray-500 uppercase font-mono">Número WhatsApp Verificado</div>
+              <div class="text-base font-bold font-mono text-white mt-0.5" id="owner2PhoneDisplay">+52 1 55 1111 2222</div>
+              <div class="text-[11px] text-aylox-green flex items-center gap-1.5 mt-1">
+                <span class="w-2 h-2 rounded-full bg-aylox-green"></span>
+                <span>Soporte 24/7 Disponible</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-6">
+            <a id="owner2WhatsappBtn" href="https://wa.me/5215511112222?text=Hola%20Socio%20Soporte%20AYLOX%20IOS,%20necesito%20asistencia%20con%20una%20instalación" target="_blank" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-card border border-aylox-green/40 text-aylox-green hover:bg-aylox-green hover:text-black transition flex items-center justify-center gap-2">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+              <span>WhatsApp de Soporte</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: SOCIO 2 (Ventas & Activaciones Rápidas) -->
+        <div class="bg-gradient-to-b from-aylox-card to-aylox-black border border-aylox-cardborder hover:border-aylox-green/60 p-6 rounded-2xl transition-all duration-300 flex flex-col justify-between relative group">
+          <div class="absolute -top-3 right-6 bg-aylox-card border border-aylox-green/40 text-aylox-green text-[10px] font-bold uppercase px-3 py-0.5 rounded-full">
+            ⚡ SOCIO DE VENTAS
+          </div>
+
+          <div>
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-14 h-14 rounded-2xl overflow-hidden border border-aylox-cardborder bg-aylox-dark flex items-center justify-center text-aylox-green text-2xl">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold font-cyber text-white" id="owner3Name">Socio Activación Express</h3>
+                <span class="text-xs text-gray-400 font-semibold">Verificación Inmediata</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Recepción inmediata de comprobantes de pago, entrega de archivos P12 y activación express de certificados en menos de 5 minutos.
+            </p>
+
+            <div class="mt-5 p-3 rounded-xl bg-aylox-dark border border-aylox-cardborder">
+              <div class="text-[10px] text-gray-500 uppercase font-mono">Número WhatsApp Verificado</div>
+              <div class="text-base font-bold font-mono text-white mt-0.5" id="owner3PhoneDisplay">+52 1 55 3333 4444</div>
+              <div class="text-[11px] text-aylox-green flex items-center gap-1.5 mt-1">
+                <span class="w-2 h-2 rounded-full bg-aylox-green"></span>
+                <span>Activaciones Nocturnas 24/7</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-6">
+            <a id="owner3WhatsappBtn" href="https://wa.me/5215533334444?text=Hola%20Socio%20Ventas%20AYLOX%20IOS,%20quiero%20activar%20mi%20certificado" target="_blank" class="w-full py-3 rounded-xl text-xs font-bold bg-aylox-card border border-aylox-green/40 text-aylox-green hover:bg-aylox-green hover:text-black transition flex items-center justify-center gap-2">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+              <span>WhatsApp de Activación</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick note for changing numbers -->
+      <div class="mt-8 text-center">
+        <p class="text-xs text-gray-400">
+          ¿Eres el Dueño o un Socio y necesitas actualizar estos números? 
+          <button onclick="ayloxTickets.openStaffAuthModal()" class="text-aylox-green hover:underline font-bold ml-1">
+            Entra al Panel de Control aquí
+          </button>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step by Step Installation Guide Section -->
+  <section class="relative z-10 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-3xl font-black font-cyber text-white">
+          ¿CÓMO FUNCIONA LA INSTALACIÓN?
+        </h2>
+        <p class="text-gray-400 text-sm mt-1">
+          Proceso 100% digital, sin necesidad de ordenador ni conocimientos complejos.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="p-6 rounded-2xl bg-aylox-card/60 border border-aylox-cardborder relative">
+          <div class="text-4xl font-black font-cyber text-aylox-green/30 absolute top-4 right-4">01</div>
+          <div class="w-10 h-10 rounded-lg bg-aylox-green/10 text-aylox-green flex items-center justify-center text-lg mb-3">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">1. Registro de UDID</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Abres tu ticket o nos escribes al WhatsApp. Te enviamos un link seguro de 1 clic para registrar el UDID único de tu iPhone o iPad en la cuenta de Apple.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-aylox-card/60 border border-aylox-cardborder relative">
+          <div class="text-4xl font-black font-cyber text-aylox-green/30 absolute top-4 right-4">02</div>
+          <div class="w-10 h-10 rounded-lg bg-aylox-green/10 text-aylox-green flex items-center justify-center text-lg mb-3">
+            <i class="fa-solid fa-file-shield"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">2. Entrega de Archivos</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Te entregamos tus archivos originales .p12 y .mobileprovision junto con la contraseña de firma personalizada y el link de descarga directo.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-aylox-card/60 border border-aylox-cardborder relative">
+          <div class="text-4xl font-black font-cyber text-aylox-green/30 absolute top-4 right-4">03</div>
+          <div class="w-10 h-10 rounded-lg bg-aylox-green/10 text-aylox-green flex items-center justify-center text-lg mb-3">
+            <i class="fa-solid fa-rocket"></i>
+          </div>
+          <h3 class="text-lg font-bold font-cyber text-white mb-2">3. Firma & Disfruta</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Instalas Scarlet, ESign o tu firmador preferido. ¡Listo! Puedes instalar cualquier aplicación modificada o juego sin límites ni revocaciones.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="relative z-10 py-16 bg-aylox-dark/40 border-t border-aylox-cardborder">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-black font-cyber text-white">
+          PREGUNTAS FRECUENTES (FAQ)
+        </h2>
+        <p class="text-gray-400 text-sm mt-1">
+          Todo lo que necesitas saber antes y después de comprar tu certificado AYLOX IOS.
+        </p>
+      </div>
+
+      <div class="space-y-4" id="faqAccordion">
+
+        <!-- FAQ Item 1 -->
+        <div class="border border-aylox-cardborder rounded-xl bg-aylox-card/50 overflow-hidden">
+          <button onclick="ayloxApp.toggleFaq(this)" class="w-full p-4 text-left flex items-center justify-between font-bold text-white text-sm hover:text-aylox-green transition">
+            <span>¿Qué es un certificado Apple y para qué sirve?</span>
+            <i class="fa-solid fa-chevron-down text-aylox-green transition-transform duration-300"></i>
+          </button>
+          <div class="faq-content hidden px-4 pb-4 text-xs text-gray-300 leading-relaxed border-t border-aylox-cardborder/50 pt-3">
+            Un certificado Apple Developer te permite firmar e instalar aplicaciones de formato .IPA directamente en tu dispositivo iOS sin necesidad de Jailbreak ni de conectar a una computadora. Puedes tener Spotify modificado, emuladores de consolas, juegos con compras desbloqueadas, WhatsApp Plus/Watusi y mucho más.
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="border border-aylox-cardborder rounded-xl bg-aylox-card/50 overflow-hidden">
+          <button onclick="ayloxApp.toggleFaq(this)" class="w-full p-4 text-left flex items-center justify-between font-bold text-white text-sm hover:text-aylox-green transition">
+            <span>¿Es seguro para mi iPhone? ¿Pierdo mi garantía oficial?</span>
+            <i class="fa-solid fa-chevron-down text-aylox-green transition-transform duration-300"></i>
+          </button>
+          <div class="faq-content hidden px-4 pb-4 text-xs text-gray-300 leading-relaxed border-t border-aylox-cardborder/50 pt-3">
+            Es 100% seguro. No altera el sistema operativo (no es Jailbreak) y utiliza el sistema de firmas oficial para desarrolladores de Apple. Tu garantía oficial de Apple permanece completamente intacta y no hay riesgo de dañar tu teléfono.
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="border border-aylox-cardborder rounded-xl bg-aylox-card/50 overflow-hidden">
+          <button onclick="ayloxApp.toggleFaq(this)" class="w-full p-4 text-left flex items-center justify-between font-bold text-white text-sm hover:text-aylox-green transition">
+            <span>¿Qué pasa si Apple revoca el certificado? ¿Tienen garantía?</span>
+            <i class="fa-solid fa-chevron-down text-aylox-green transition-transform duration-300"></i>
+          </button>
+          <div class="faq-content hidden px-4 pb-4 text-xs text-gray-300 leading-relaxed border-t border-aylox-cardborder/50 pt-3">
+            En nuestros planes VIP Pro y Pack Full Tweaks cuentas con garantía de reposición de 12 meses. Si Apple llegará a revocar el certificado por alguna actualización, te activamos uno nuevo de reemplazo sin costo adicional.
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="border border-aylox-cardborder rounded-xl bg-aylox-card/50 overflow-hidden">
+          <button onclick="ayloxApp.toggleFaq(this)" class="w-full p-4 text-left flex items-center justify-between font-bold text-white text-sm hover:text-aylox-green transition">
+            <span>¿Cómo me ayudan el dueño o los socios con la instalación?</span>
+            <i class="fa-solid fa-chevron-down text-aylox-green transition-transform duration-300"></i>
+          </button>
+          <div class="faq-content hidden px-4 pb-4 text-xs text-gray-300 leading-relaxed border-t border-aylox-cardborder/50 pt-3">
+            Al abrir un ticket o escribirnos a los WhatsApp oficiales, uno de nosotros te atenderá personalmente. Te enviamos capturas de pantalla guiadas, enlaces directos de descarga y si tienes dudas te asesoramos en tiempo real hasta que tengas tus aplicaciones funcionando.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="relative z-10 bg-aylox-black border-t border-aylox-cardborder py-12 text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-aylox-cardborder/60">
+        
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl overflow-hidden border border-aylox-green/50">
+            <img src="assets/logo.jpeg" alt="Logo AYLOX" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="text-lg font-black font-cyber text-white">AYLOX <span class="text-aylox-green">IOS</span></div>
+            <div class="text-[10px] text-gray-400">Líderes en Certificados Apple & Ecosistema VIP</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-6 text-gray-400 text-xs">
+          <a href="#inicio" class="hover:text-aylox-green transition">Inicio</a>
+          <a href="#precios" class="hover:text-aylox-green transition">Precios</a>
+          <a href="#seguridad" class="hover:text-aylox-green transition">Anti-Hack Shield</a>
+          <a href="#contacto" class="hover:text-aylox-green transition">Números de Dueños</a>
+          <button onclick="ayloxTickets.openStaffAuthModal()" class="text-aylox-green hover:underline">Acceso Privado Staff</button>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-[11px]">
+        <div>
+          © 2026 AYLOX IOS. Todos los derechos reservados. Desarrollado con tecnología de seguridad y encriptación de vanguardia.
+        </div>
+        <div class="flex items-center space-x-3 text-aylox-green font-mono">
+          <i class="fa-solid fa-lock"></i>
+          <span>PROTEGIDO CONTRA ATAQUES DDOS & SCRAPING</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Modal: Abrir Nuevo Ticket -->
+  <div id="newTicketModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-aylox-dark border-2 border-aylox-green/60 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-[0_0_40px_rgba(0,255,102,0.3)] relative animate-float">
+      
+      <!-- Close Button -->
+      <button onclick="ayloxTickets.closeNewTicketModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center space-x-3 mb-6">
+        <div class="w-12 h-12 rounded-xl bg-aylox-green/20 text-aylox-green flex items-center justify-center text-xl">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black font-cyber text-white">CREAR TICKET DE ATENCIÓN</h3>
+          <p class="text-xs text-gray-400">Atendido por el Dueño y Socios de AYLOX IOS 24/7</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="newTicketForm" onsubmit="ayloxTickets.submitTicket(event)" class="space-y-4">
+        
+        <!-- Anti-Bot Honeypot Field (Hidden for real users, bots fill it) -->
+        <div class="hidden" aria-hidden="true">
+          <label for="honeypot_field">Si eres humano deja esto vacío</label>
+          <input type="text" id="honeypot_field" name="honeypot_field" tabindex="-1" autocomplete="off">
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Tu Nombre o Apodo:</label>
+          <input type="text" id="ticketCustomerName" required placeholder="Ej. Carlos Mendoza" maxlength="60" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+        </div>
+
+        <!-- WhatsApp Phone -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Tu WhatsApp de Contacto (con código de país):</label>
+          <input type="tel" id="ticketCustomerPhone" required placeholder="+52 55 1234 5678" maxlength="25" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+        </div>
+
+        <!-- Device Model -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Dispositivo:</label>
+            <select id="ticketDeviceModel" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none transition">
+              <option value="iPhone 16 / 16 Pro">iPhone 16 / 16 Pro</option>
+              <option value="iPhone 15 / 15 Pro">iPhone 15 / 15 Pro</option>
+              <option value="iPhone 14 / 14 Pro">iPhone 14 / 14 Pro</option>
+              <option value="iPhone 13 / 13 Pro">iPhone 13 / 13 Pro</option>
+              <option value="iPhone 12 o anterior">iPhone 12 o anterior</option>
+              <option value="iPad Pro / Air / Mini">iPad Pro / Air / Mini</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Plan de Interés:</label>
+            <select id="ticketSelectedPlan" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none transition">
+              <option value="VIP Pro Antibaneo ($22 USD)">VIP Pro Antibaneo</option>
+              <option value="Certificado Básico ($12 USD)">Certificado Básico</option>
+              <option value="Pack Full Tweaks ($35 USD)">Pack Full Tweaks</option>
+              <option value="Pack Revendedor ($75 USD)">Pack Revendedor</option>
+              <option value="Consulta General">Consulta General / Precios</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Mensaje o Duda:</label>
+          <textarea id="ticketCustomerMsg" rows="3" required placeholder="Hola, me gustaría saber si tienen método de pago en mi país y cómo se hace la instalación..." maxlength="500" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition"></textarea>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="text-[11px] text-gray-400 flex items-center gap-1.5 bg-aylox-black/60 p-2.5 rounded-lg border border-aylox-cardborder">
+          <i class="fa-solid fa-shield text-aylox-green"></i>
+          <span>Protegido con Anti-Spam Shield. Tu información solo la ven el dueño y socios.</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btnSubmitTicket" class="w-full py-3.5 rounded-xl text-sm font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,102,0.4)]">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Enviar Ticket y Abrir Chat</span>
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- 2. Modal: Live Ticket Chat Room (Customer & Staff Interactive Chat) -->
+  <div id="ticketChatModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-aylox-dark border-2 border-aylox-green/60 rounded-3xl max-w-2xl w-full h-[620px] flex flex-col shadow-[0_0_50px_rgba(0,255,102,0.3)] overflow-hidden">
+      
+      <!-- Chat Header -->
+      <div class="bg-aylox-black border-b border-aylox-cardborder p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl overflow-hidden border border-aylox-green">
+            <img src="assets/logo.jpeg" alt="AYLOX Logo" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-white text-sm" id="chatTicketTitle">Ticket #AYL-XXXX</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold" id="chatTicketStatusBadge">ABIERTO</span>
+            </div>
+            <div class="text-[11px] text-gray-400" id="chatTicketSub">Atendiendo: Staff AYLOX IOS 24/7</div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Direct WhatsApp Transfer Button -->
+          <button id="chatExportWhatsappBtn" onclick="ayloxTickets.exportCurrentTicketToWhatsapp()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 hover:bg-green-500 text-white transition flex items-center gap-1.5 shadow">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span class="hidden sm:inline">Pasar a WhatsApp</span>
+          </button>
+          <button onclick="ayloxTickets.closeChatModal()" class="text-gray-400 hover:text-white p-2 text-lg">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Info Bar for Customer -->
+      <div class="bg-aylox-card/70 border-b border-aylox-cardborder px-4 py-2 flex items-center justify-between text-xs">
+        <div class="text-gray-300 truncate">
+          <span class="text-gray-500">Plan:</span> <strong class="text-aylox-green" id="chatPlanInfo">-</strong> | 
+          <span class="text-gray-500">Dispositivo:</span> <span class="text-white" id="chatDeviceInfo">-</span>
+        </div>
+        <div class="text-aylox-green font-mono text-[11px] flex items-center gap-1 flex-shrink-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-aylox-green animate-ping"></span>
+          <span>Online</span>
+        </div>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-aylox-black/60" id="chatMessagesContainer">
+        <!-- Messages loaded dynamically -->
+      </div>
+
+      <!-- Staff Quick Canned Responses Bar (Visible in Staff Mode) -->
+      <div id="staffQuickResponsesBar" class="hidden bg-aylox-dark border-t border-aylox-cardborder p-2 overflow-x-auto flex items-center space-x-2">
+        <span class="text-[10px] text-gray-400 uppercase font-mono px-2 flex-shrink-0">Respuestas Rápidas:</span>
+        <button onclick="ayloxTickets.insertCannedResponse('pagos')" class="px-2.5 py-1 rounded bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 text-[11px] whitespace-nowrap transition">
+          💳 Métodos de Pago
+        </button>
+        <button onclick="ayloxTickets.insertCannedResponse('whatsapp')" class="px-2.5 py-1 rounded bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 text-[11px] whitespace-nowrap transition">
+          📲 Pasar a WhatsApp
+        </button>
+        <button onclick="ayloxTickets.insertCannedResponse('instalacion')" class="px-2.5 py-1 rounded bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 text-[11px] whitespace-nowrap transition">
+          📦 Guía Instalación
+        </button>
+        <button onclick="ayloxTickets.insertCannedResponse('comprobante')" class="px-2.5 py-1 rounded bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 text-[11px] whitespace-nowrap transition">
+          ⏳ Pedir Comprobante
+        </button>
+      </div>
+
+      <!-- Chat Input Area -->
+      <form id="chatReplyForm" onsubmit="ayloxTickets.sendChatMessage(event)" class="bg-aylox-dark border-t border-aylox-cardborder p-3 flex items-center space-x-2">
+        <input type="text" id="chatInputMessage" required placeholder="Escribe un mensaje aquí..." maxlength="400" class="flex-1 bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none transition">
+        <button type="submit" class="px-4 py-2.5 rounded-xl bg-aylox-green text-black hover:bg-aylox-greenhover font-bold text-sm transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+          <span>Enviar</span>
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- 3. Modal: Staff / Admin Dashboard (Dueño & Socios) -->
+  <div id="staffAuthModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-aylox-dark border-2 border-aylox-green/60 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-[0_0_50px_rgba(0,255,102,0.3)] relative">
+      <button onclick="ayloxTickets.closeStaffAuthModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 rounded-2xl bg-aylox-green/20 text-aylox-green border border-aylox-green/40 flex items-center justify-center text-2xl mx-auto mb-3 shadow-[0_0_20px_rgba(0,255,102,0.2)]">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="text-xl font-black font-cyber text-white">PORTAL DE CONTROL STAFF</h3>
+        <p class="text-xs text-gray-400 mt-1">Acceso restringido para el Dueño Principal y Socios</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Selecciona tu Rol:</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" id="roleBtnOwner" onclick="ayloxTickets.selectStaffRole('dueno')" class="py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-crown"></i>
+              <span>👑 Dueño</span>
+            </button>
+            <button type="button" id="roleBtnPartner" onclick="ayloxTickets.selectStaffRole('socio')" class="py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-user-shield"></i>
+              <span>🛡️ Socio</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">PIN de Seguridad:</label>
+          <input type="password" id="staffPinInput" placeholder="PIN de acceso (Ej: 1111)" maxlength="12" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white focus:outline-none transition">
+          <div class="text-[11px] text-gray-500 mt-1.5 text-center">
+            PIN por defecto: <strong>1111</strong> (Dueño) o <strong>2222</strong> (Socio)
+          </div>
+        </div>
+
+        <button onclick="ayloxTickets.loginStaff()" class="w-full py-3.5 rounded-xl text-sm font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,102,0.4)]">
+          <i class="fa-solid fa-lock-open"></i>
+          <span>Ingresar al Panel de Gestión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal: Staff Management Dashboard (Full Management View) -->
+  <div id="staffDashboardModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-aylox-dark border-2 border-aylox-green/80 rounded-3xl max-w-5xl w-full h-[88vh] flex flex-col shadow-[0_0_60px_rgba(0,255,102,0.3)] overflow-hidden">
+      
+      <!-- Dashboard Top Header -->
+      <div class="bg-aylox-black border-b border-aylox-cardborder p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl overflow-hidden border border-aylox-green">
+            <img src="assets/logo.jpeg" alt="Logo" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-black font-cyber text-lg text-white">PANEL ADMINISTRATIVO AYLOX</span>
+              <span id="staffRoleBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-aylox-green text-black">👑 DUEÑO PRINCIPAL</span>
+            </div>
+            <div class="text-[11px] text-gray-400">Control de Tickets, Contactos, Métodos de Pago y Seguridad</div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Filter Tabs -->
+          <button onclick="ayloxTickets.showDashboardTab('tickets')" class="dash-tab active-dash-tab px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            <i class="fa-solid fa-list-check mr-1"></i> Tickets (<span id="dashTicketsCount">0</span>)
+          </button>
+          <button onclick="ayloxTickets.showDashboardTab('config')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-gears mr-1"></i> Configuración Teléfonos
+          </button>
+          <button onclick="ayloxTickets.showDashboardTab('security')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-shield mr-1"></i> Anti-Hack Shield
+          </button>
+          <button onclick="ayloxTickets.logoutStaff()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition ml-2">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6" id="dashContentArea">
+        
+        <!-- View 1: Tickets Table -->
+        <div id="dashTabTickets" class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-aylox-black/60 p-3 rounded-xl border border-aylox-cardborder">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-gray-400">Filtrar:</span>
+              <button onclick="ayloxTickets.filterTickets('all')" class="px-2.5 py-1 rounded bg-aylox-green text-black text-xs font-bold">Todos</button>
+              <button onclick="ayloxTickets.filterTickets('abierto')" class="px-2.5 py-1 rounded bg-aylox-card text-gray-300 hover:text-white text-xs">Abiertos</button>
+              <button onclick="ayloxTickets.filterTickets('en_proceso')" class="px-2.5 py-1 rounded bg-aylox-card text-gray-300 hover:text-white text-xs">En Proceso</button>
+              <button onclick="ayloxTickets.filterTickets('resuelto')" class="px-2.5 py-1 rounded bg-aylox-card text-gray-300 hover:text-white text-xs">Cerrados</button>
+            </div>
+            <div>
+              <button onclick="ayloxTickets.exportTicketsJSON()" class="text-xs text-aylox-green hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-download"></i>
+                <span>Descargar Copia de Respaldo</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-aylox-cardborder">
+            <table class="w-full text-left text-xs text-gray-300">
+              <thead class="bg-aylox-black text-gray-400 uppercase font-mono text-[10px] border-b border-aylox-cardborder">
+                <tr>
+                  <th class="p-3">Ticket ID</th>
+                  <th class="p-3">Cliente</th>
+                  <th class="p-3">WhatsApp</th>
+                  <th class="p-3">Dispositivo / Plan</th>
+                  <th class="p-3">Estado</th>
+                  <th class="p-3">Fecha</th>
+                  <th class="p-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="dashTicketsTableBody" class="divide-y divide-aylox-cardborder/40 bg-aylox-dark/80">
+                <!-- Injected via tickets.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- View 2: Configuración de Teléfonos y Cuentas -->
+        <div id="dashTabConfig" class="hidden space-y-6 max-w-3xl mx-auto">
+          <div class="bg-aylox-card/60 border border-aylox-cardborder p-6 rounded-2xl space-y-4">
+            <div class="flex items-center space-x-2 text-aylox-green font-bold text-sm">
+              <i class="fa-solid fa-phone"></i>
+              <span>CONFIGURACIÓN DE NÚMEROS TELEFÓNICOS DE ATENCIÓN</span>
+            </div>
+            <p class="text-xs text-gray-400">
+              Cambia aquí los números de teléfono para que los botones de WhatsApp de la web apunten directamente a ti y a tus socios.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">👑 WhatsApp Dueño Principal:</label>
+                <input type="text" id="cfgOwner1Phone" placeholder="5215500000000" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                <span class="text-[10px] text-gray-500">Formato internacional sin signos (ej: 5215512345678)</span>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Nombre Visible Dueño:</label>
+                <input type="text" id="cfgOwner1Name" placeholder="Dueño Principal AYLOX" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">🛡️ WhatsApp Socio 1 (Soporte):</label>
+                <input type="text" id="cfgOwner2Phone" placeholder="5215511112222" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Nombre Visible Socio 1:</label>
+                <input type="text" id="cfgOwner2Name" placeholder="Socio Soporte & Instalación" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">⚡ WhatsApp Socio 2 (Ventas):</label>
+                <input type="text" id="cfgOwner3Phone" placeholder="5215533334444" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Nombre Visible Socio 2:</label>
+                <input type="text" id="cfgOwner3Name" placeholder="Socio Activación Express" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Details Configuration -->
+          <div class="bg-aylox-card/60 border border-aylox-cardborder p-6 rounded-2xl space-y-4">
+            <div class="flex items-center space-x-2 text-aylox-green font-bold text-sm">
+              <i class="fa-solid fa-wallet"></i>
+              <span>CONFIGURACIÓN DE CUENTAS DE PAGO</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Binance Pay ID:</label>
+                <input type="text" id="cfgBinanceId" placeholder="789421054" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-300 mb-1 font-semibold">Correo PayPal:</label>
+                <input type="text" id="cfgPaypal" placeholder="pagos@ayloxios.com" class="w-full bg-aylox-black border border-aylox-cardborder focus:border-aylox-green rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button onclick="ayloxTickets.saveStaffConfig()" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-aylox-green text-black hover:bg-aylox-greenhover transition flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Guardar Cambios de Configuración</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 3: Security Telemetry & Log -->
+        <div id="dashTabSecurity" class="hidden space-y-4 max-w-4xl mx-auto">
+          <div class="bg-aylox-black border border-aylox-cardborder rounded-2xl p-5 font-mono text-xs space-y-3">
+            <div class="text-aylox-green font-bold flex items-center justify-between">
+              <span>[ AYLOX SENTINEL SHIELD AUDIT LOG ]</span>
+              <span class="text-[10px] bg-aylox-green/20 text-aylox-green px-2 py-0.5 rounded">MODO ACTIVO</span>
+            </div>
+            <div id="securityTelemetryLog" class="h-64 overflow-y-auto space-y-1.5 text-gray-400 bg-aylox-dark/90 p-3 rounded-lg border border-aylox-cardborder text-[11px]">
+              <div><span class="text-aylox-green">[BOOT]</span> Sistema de defensa contra inyecciones iniciado correctamente.</div>
+              <div><span class="text-aylox-green">[SHIELD]</span> Rate Limiting fijado a máximo 3 tickets / 10 minutos por sesión.</div>
+              <div><span class="text-aylox-green">[FILTER]</span> Trampa honeypot bot trap activa y vigilante en formularios.</div>
+              <div><span class="text-aylox-green">[FIREWALL]</span> Algoritmo de sanitización HTML5 / XSS validado.</div>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-[11px] text-gray-500">Cero intrusiones no autorizadas registradas en el servidor.</span>
+              <button onclick="ayloxSecurity.clearLogs()" class="text-xs text-gray-400 hover:text-white underline">Limpiar Registro</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Floating Quick WhatsApp Widget in bottom right corner -->
+  <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end space-y-3">
+    
+    <!-- Expanded Contact Pill -->
+    <div id="floatingQuickCard" class="hidden bg-aylox-dark/95 border-2 border-aylox-green/80 rounded-2xl p-4 shadow-[0_0_30px_rgba(0,255,102,0.3)] max-w-xs backdrop-blur-xl animate-float">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-aylox-cardborder">
+        <span class="text-xs font-bold text-white font-cyber flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-aylox-green animate-ping"></span>
+          <span>¿CON QUIÉN DESEAS HABLAR?</span>
+        </span>
+        <button onclick="ayloxApp.toggleQuickCard()" class="text-gray-400 hover:text-white text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <a id="floatOwnerBtn" href="https://wa.me/5215500000000?text=Hola%20Dueño%20AYLOX%20IOS,%20quiero%20comprar%20un%20certificado" target="_blank" class="p-2 rounded-lg bg-aylox-black border border-aylox-cardborder hover:border-aylox-green flex items-center space-x-2.5 transition">
+          <span class="text-base">👑</span>
+          <div>
+            <div class="font-bold text-white">Dueño Principal</div>
+            <div class="text-[10px] text-aylox-green">Ventas VIP & Dudas Rápidas</div>
+          </div>
+        </a>
+
+        <a id="floatSupportBtn" href="https://wa.me/5215511112222?text=Hola%20Socio%20Soporte%20AYLOX%20IOS,%20necesito%20ayuda" target="_blank" class="p-2 rounded-lg bg-aylox-black border border-aylox-cardborder hover:border-aylox-green flex items-center space-x-2.5 transition">
+          <span class="text-base">🛡️</span>
+          <div>
+            <div class="font-bold text-white">Socio de Soporte</div>
+            <div class="text-[10px] text-gray-400">Instalación y Guía</div>
+          </div>
+        </a>
+
+        <button onclick="ayloxTickets.openNewTicketModal(); ayloxApp.toggleQuickCard()" class="w-full p-2 rounded-lg bg-aylox-green/10 border border-aylox-green/40 hover:bg-aylox-green/20 text-aylox-green font-bold flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-ticket"></i>
+          <span>Abrir Ticket en la Web</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Floating Trigger Icon Button -->
+    <button onclick="ayloxApp.toggleQuickCard()" class="relative w-14 h-14 rounded-full bg-aylox-green text-black flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(0,255,102,0.6)] hover:scale-110 active:scale-95 transition-all duration-300 group">
+      <i class="fa-brands fa-whatsapp group-hover:rotate-12 transition-transform"></i>
+      <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-black animate-ping"></span>
+    </button>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- Application Scripts -->
+  <script src="security.js"></script>
+  <script src="tickets.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
