@@ -15,12 +15,12 @@ const ayloxTickets = (function() {
 
   // Configuración predeterminada de teléfonos y cuentas
   const DEFAULT_CONFIG = {
-    owner1Name: 'Dueño Principal AYLOX',
-    owner1Phone: '5215500000000',
-    owner2Name: 'Socio Soporte & Instalación',
-    owner2Phone: '5215511112222',
-    owner3Name: 'Socio Activación Express',
-    owner3Phone: '5215533334444',
+    owner1Name: 'Dueño 1 — AYLOX IOS',
+    owner1Phone: '584124020112',
+    owner2Name: 'Dueño 2 — AYLOX IOS',
+    owner2Phone: '50232509982',
+    owner3Name: 'Línea de Activación Rápida',
+    owner3Phone: '584124020112',
     binanceId: '789421054',
     paypal: 'pagos@ayloxios.com',
     pinOwner: '1111',
@@ -32,32 +32,32 @@ const ayloxTickets = (function() {
     {
       id: 'AYL-8492',
       customerName: 'Santiago Morales',
-      customerPhone: '+52 55 9876 5432',
+      customerPhone: '+58 412 123 4567',
       device: 'iPhone 15 Pro Max',
-      plan: 'VIP Pro Antibaneo ($22 USD)',
+      plan: 'Certificado VIP + Hack / Mod (Pack Completo)',
       status: 'en_proceso',
       createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      assignedTo: 'Dueño Principal',
+      assignedTo: 'Dueño 1 (Venezuela)',
       messages: [
         {
           id: 'm1',
           sender: 'system',
           author: 'AYLOX BOT',
-          text: '¡Hola Santiago! Tu ticket fue recibido con éxito. El Dueño Principal o un Socio tomará tu caso de inmediato.',
+          text: '¡Hola Santiago! Tu ticket fue recibido con éxito. Uno de los dos Dueños tomará tu caso de inmediato.',
           time: 'Hace 45 min'
         },
         {
           id: 'm2',
           sender: 'client',
           author: 'Santiago Morales',
-          text: 'Buenas tardes, quiero saber si este certificado me sirve para jugar con mods sin riesgo de baneo en iOS 18.',
+          text: 'Buenas tardes, quiero comprar el certificado con el hack incluido para jugar sin riesgo de baneo en iOS 18.',
           time: 'Hace 43 min'
         },
         {
           id: 'm3',
           sender: 'staff',
-          author: 'Dueño Principal',
-          text: '¡Hola Santiago! Sí, nuestro plan VIP Pro incluye certificados directos Apple Developer con soporte completo para iOS 18 y protección anti-blacklist. Te dejamos los métodos de pago para activarlo de inmediato.',
+          author: 'Dueño 1 (Venezuela)',
+          text: '¡Hola Santiago! Sí, nuestro pack completo de Certificado VIP + Hack/Mod incluye soporte antibaneo para iOS 18. Te dejamos los métodos de pago para activarlo de inmediato.',
           time: 'Hace 38 min'
         }
       ]
@@ -65,25 +65,25 @@ const ayloxTickets = (function() {
     {
       id: 'AYL-8488',
       customerName: 'Mateo Fernández',
-      customerPhone: '+57 310 123 4567',
-      device: 'iPhone 14',
-      plan: 'Pack Full Tweaks ($35 USD)',
+      customerPhone: '+502 4567 8901',
+      device: 'iPhone 14 Pro',
+      plan: 'Solo Certificado Apple Developer',
       status: 'abierto',
       createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-      assignedTo: 'Socio Soporte & Instalación',
+      assignedTo: 'Dueño 2 (Guatemala)',
       messages: [
         {
           id: 'm1',
           sender: 'system',
           author: 'AYLOX BOT',
-          text: '¡Hola Mateo! Ticket registrado para Pack Full Tweaks.',
+          text: '¡Hola Mateo! Ticket registrado para Solo Certificado Apple Developer.',
           time: 'Hace 15 min'
         },
         {
           id: 'm2',
           sender: 'client',
           author: 'Mateo Fernández',
-          text: 'Hola socio, tengo una duda sobre la instalación asistida, ¿me ayudan por videollamada o llamada?',
+          text: 'Hola, solo me interesa el certificado porque ya tengo mis propias aplicaciones IPAs. ¿Cuánto tiempo tarda la activación?',
           time: 'Hace 14 min'
         }
       ]
@@ -129,7 +129,17 @@ const ayloxTickets = (function() {
       return { ...DEFAULT_CONFIG };
     }
     try {
-      return { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+      const parsed = JSON.parse(raw);
+      // Si tiene los números dummy antiguos, actualizar a los 2 dueños reales
+      if (parsed.owner1Phone === '5215500000000' || !parsed.owner1Phone) {
+        parsed.owner1Phone = DEFAULT_CONFIG.owner1Phone;
+        parsed.owner1Name = DEFAULT_CONFIG.owner1Name;
+      }
+      if (parsed.owner2Phone === '5215511112222' || !parsed.owner2Phone) {
+        parsed.owner2Phone = DEFAULT_CONFIG.owner2Phone;
+        parsed.owner2Name = DEFAULT_CONFIG.owner2Name;
+      }
+      return { ...DEFAULT_CONFIG, ...parsed };
     } catch {
       return { ...DEFAULT_CONFIG };
     }
