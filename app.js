@@ -75,6 +75,21 @@ const ayloxSound = (function() {
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
         osc.start(now);
         osc.stop(now + 0.22);
+      } else if (type === 'ticket_alert') {
+        // Melodía cibernética nítida para nuevos tickets y mensajes
+        const notes = [587.33, 739.99, 880, 1174.66]; // D5, F#5, A5, D6
+        notes.forEach((freq, i) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(freq, now + i * 0.07);
+          g.gain.setValueAtTime(0.12, now + i * 0.07);
+          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.18);
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.start(now + i * 0.07);
+          o.stop(now + i * 0.07 + 0.18);
+        });
       }
     } catch (e) {
       console.warn('Audio synthesis not supported or prevented by policy', e);

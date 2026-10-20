@@ -102,7 +102,13 @@
         <!-- Sound Toggle -->
         <button id="soundToggleBtn" onclick="ayloxSound.toggle()" class="text-gray-400 hover:text-aylox-green transition flex items-center gap-1.5 text-xs py-0.5 px-2 rounded border border-aylox-cardborder hover:border-aylox-green/40">
           <i id="soundIcon" class="fa-solid fa-volume-high text-aylox-green"></i>
-          <span id="soundText" class="hidden sm:inline">Sonido Cyber</span>
+          <span id="soundText" class="hidden sm:inline">Sonido</span>
+        </button>
+
+        <!-- Web Notifications Bell Toggle -->
+        <button id="webNotifToggleBtn" onclick="ayloxTickets.toggleWebNotifications()" title="Activar/desactivar notificaciones web de tickets" class="text-gray-400 hover:text-aylox-green transition flex items-center gap-1.5 text-xs py-0.5 px-2 rounded border border-aylox-cardborder hover:border-aylox-green/40">
+          <i id="webNotifIcon" class="fa-solid fa-bell text-aylox-green"></i>
+          <span id="webNotifText" class="hidden sm:inline">Alertas Web</span>
         </button>
 
         <!-- Staff Access Quick Button -->
@@ -1454,9 +1460,16 @@
           <span class="text-gray-500">Plan:</span> <strong class="text-aylox-green" id="chatPlanInfo">-</strong> | 
           <span class="text-gray-500">Dispositivo:</span> <span class="text-white" id="chatDeviceInfo">-</span>
         </div>
-        <div class="text-aylox-green font-mono text-[11px] flex items-center gap-1 flex-shrink-0">
-          <span class="w-1.5 h-1.5 rounded-full bg-aylox-green animate-ping"></span>
-          <span>Online</span>
+        <div class="text-aylox-green font-mono text-[11px] flex items-center gap-2 flex-shrink-0">
+          <span class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-aylox-green animate-ping"></span>
+            <span>Online</span>
+          </span>
+          <span class="text-gray-500 hidden sm:inline">|</span>
+          <span class="hidden sm:flex items-center gap-1 text-gray-300" title="Alertas sonoras y web activas">
+            <i class="fa-solid fa-bell text-aylox-green text-[10px]"></i>
+            <span class="text-[10px]">Alertas Activas</span>
+          </span>
         </div>
       </div>
 
@@ -1581,6 +1594,10 @@
           </button>
           <button onclick="ayloxTickets.showDashboardTab('security')" class="dash-tab px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition">
             <i class="fa-solid fa-shield mr-1"></i> Anti-Hack
+          </button>
+          <button onclick="ayloxTickets.testNotification()" title="Probar sonido y notificación web de tickets" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-aylox-card text-aylox-green border border-aylox-green/40 hover:bg-aylox-green hover:text-black transition flex items-center gap-1.5">
+            <i class="fa-solid fa-bell"></i>
+            <span class="hidden sm:inline">Probar Alertas</span>
           </button>
           <button onclick="ayloxTickets.logoutStaff()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition ml-2">
             <i class="fa-solid fa-right-from-bracket"></i>

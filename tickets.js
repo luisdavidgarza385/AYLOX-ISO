@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ===================================================
  * AYLOX IOS — TICKET ENGINE & MULTI-ROLE SYSTEM v4.0
  * ===================================================
@@ -100,12 +100,153 @@ const ayloxTickets = (function() {
   let selectedAuthRole = 'dueno';
   let broadcastChannel = null;
 
+  // ===================================================
+  // NOTIFICACIONES WEB, SONORAS Y PUSH DEL SISTEMA
+  // ===================================================
+  let isWebNotifsEnabled = localStorage.getItem('aylox_web_notifs') !== 'false';
+  let titleFlashInterval = null;
+  const originalPageTitle = document.title || 'AYLOX IOS — Certificados VIP (iOS 15 a iOS 27)';
+  let knownTicketMessageCounts = {};
+  let lastKnownTicketsCount = 0;
+  let hasInitializedNotifs = false;
+
+  function flashDocumentTitle(newText) {
+    if (titleFlashInterval) clearInterval(titleFlashInterval);
+    let toggle = false;
+    titleFlashInterval = setInterval(() => {
+      document.title = toggle ? newText : originalPageTitle;
+      toggle = !toggle;
+    }, 1000);
+  }
+
+  function stopFlashingTitle() {
+    if (titleFlashInterval) {
+      clearInterval(titleFlashInterval);
+      titleFlashInterval = null;
+      document.title = originalPageTitle;
+    }
+  }
+
+  window.addEventListener('focus', stopFlashingTitle);
+
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      try {
+        Notification.requestPermission().then(permission => {
+          updateWebNotifUI();
+          if (permission === 'granted') {
+            ayloxApp.showToast('🔔 ¡Notificaciones de tickets activadas en tu navegador!', 'success');
+            if (typeof ayloxSound !== 'undefined') ayloxSound.play('ticket_alert');
+          }
+        });
+      } catch (e) {
+        console.warn('Permisos de notificaciones:', e);
+      }
+    }
+  }
+
+  function toggleWebNotifications() {
+    isWebNotifsEnabled = !isWebNotifsEnabled;
+    localStorage.setItem('aylox_web_notifs', isWebNotifsEnabled ? 'true' : 'false');
+    updateWebNotifUI();
+
+    if (isWebNotifsEnabled) {
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(p => {
+          triggerWebNotification('AYLOX IOS Alertas 24/7', 'Notificaciones activadas. Te avisaremos con sonido y alerta en pantalla.');
+        });
+      } else {
+        triggerWebNotification('AYLOX IOS Alertas 24/7', 'Notificaciones activadas. Te avisaremos con sonido y alerta en pantalla.');
+      }
+    } else {
+      ayloxApp.showToast('Notificaciones web pausadas.', 'info');
+    }
+  }
+
+  function updateWebNotifUI() {
+    const icon = document.getElementById('webNotifIcon');
+    const text = document.getElementById('webNotifText');
+    if (!icon) return;
+
+    if (!isWebNotifsEnabled) {
+      icon.className = 'fa-solid fa-bell-slash text-gray-500';
+      if (text) text.textContent = 'Alertas Off';
+    } else {
+      icon.className = 'fa-solid fa-bell text-aylox-green animate-pulse';
+      if (text) text.textContent = 'Alertas 24/7';
+    }
+  }
+
+  function triggerWebNotification(title, message, ticketId = null) {
+    if (!isWebNotifsEnabled) return;
+
+    // 1. Sonido cyber característico
+    if (typeof ayloxSound !== 'undefined') {
+      ayloxSound.play('ticket_alert');
+    }
+
+    // 2. Notificación Toast en pantalla
+    if (typeof ayloxApp !== 'undefined') {
+      ayloxApp.showToast(`🔔 ${title}\n${message}`, 'info');
+    }
+
+    // 3. Parpadeo de pestaña si el navegador está minimizado o en otra pestaña
+    if (document.hidden) {
+      flashDocumentTitle(`🔔 (1) ¡NUEVO MENSAJE TICKET!`);
+    }
+
+    // 4. Notificación del Sistema Operativo (Windows, Android, Mac)
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        const notif = new Notification(title, {
+          body: message,
+          icon: 'assets/logo.jpeg',
+          badge: 'assets/logo.jpeg',
+          tag: ticketId ? `ticket-${ticketId}` : 'aylox-ticket-alert',
+          silent: false
+        });
+
+        notif.onclick = function() {
+          window.focus();
+          stopFlashingTitle();
+          if (ticketId) {
+            openChatModal(ticketId);
+          }
+          notif.close();
+        };
+      } catch (e) {
+        console.warn('Error en Notification push:', e);
+      }
+    }
+  }
+
+  function testNotification() {
+    requestNotificationPermission();
+    triggerWebNotification(
+      'AYLOX IOS 18 — Prueba de Notificación',
+      '¡Sonido cyber y alertas en tiempo real activadas! El sistema te notificará cuando haya mensajes nuevos.'
+    );
+  }
+
   // BroadcastChannel para sincronizar en vivo entre pestañas del mismo navegador
   try {
     if (typeof BroadcastChannel !== 'undefined') {
       broadcastChannel = new BroadcastChannel('aylox_channel');
       broadcastChannel.onmessage = (event) => {
         if (event.data && event.data.type === 'TICKETS_UPDATED') {
+          if (event.data.newTicket) {
+            triggerWebNotification(
+              '¡Nuevo Ticket Recibido!',
+              `#${event.data.newTicket.id} de ${event.data.newTicket.customerName} (${event.data.newTicket.device})`,
+              event.data.newTicket.id
+            );
+          } else if (event.data.newMessage) {
+            triggerWebNotification(
+              `Mensaje en Ticket #${event.data.ticketId}`,
+              `${event.data.newMessage.author}: "${event.data.newMessage.text.substring(0, 75)}"`,
+              event.data.ticketId
+            );
+          }
           renderPublicTickets();
           renderDashTickets();
           if (currentActiveTicketId) {
@@ -118,9 +259,9 @@ const ayloxTickets = (function() {
     console.warn('BroadcastChannel no soportado, usando almacenamiento estándar.', e);
   }
 
-  function notifyChange() {
+  function notifyChange(payload = {}) {
     if (broadcastChannel) {
-      broadcastChannel.postMessage({ type: 'TICKETS_UPDATED', timestamp: Date.now() });
+      broadcastChannel.postMessage({ type: 'TICKETS_UPDATED', timestamp: Date.now(), ...payload });
     }
   }
 
@@ -285,11 +426,44 @@ const ayloxTickets = (function() {
         const localTickets = getTickets();
         const prevCount = localTickets.length;
 
-        // Si llegó un ticket nuevo y estamos en el panel, alertar con sonido
-        if (cloudTickets.length > prevCount && currentStaffRole) {
-          if (typeof ayloxSound !== 'undefined') ayloxSound.play('alert');
-          ayloxApp.showToast(`🔔 ¡Nuevo ticket recibido de ${cloudTickets[0].customerName}!`, 'info');
+        // Si ya se inicializaron las notificaciones, detectar novedades
+        if (hasInitializedNotifs) {
+          // A. ¿Nuevo ticket creado?
+          if (cloudTickets.length > prevCount) {
+            const newest = cloudTickets[0];
+            triggerWebNotification(
+              '¡Nuevo Ticket Recibido!',
+              `#${newest.id} de ${newest.customerName} (${newest.device})`,
+              newest.id
+            );
+          }
+
+          // B. ¿Nuevos mensajes en tickets existentes?
+          cloudTickets.forEach(ct => {
+            const oldCount = knownTicketMessageCounts[ct.id] || 0;
+            if (ct.messages && ct.messages.length > oldCount) {
+              const latestMsg = ct.messages[ct.messages.length - 1];
+              // Evitar auto-alertarse si uno mismo acaba de escribir en el chat
+              const isOwnMessage = (currentStaffRole && latestMsg.sender === 'staff') ||
+                                   (!currentStaffRole && latestMsg.sender === 'client' && ct.id === currentActiveTicketId);
+              
+              if (!isOwnMessage) {
+                const preview = latestMsg.text ? latestMsg.text.substring(0, 75) : 'Nuevo mensaje recibido';
+                triggerWebNotification(
+                  `Mensaje en Ticket #${ct.id}`,
+                  `${latestMsg.author}: "${preview}"`,
+                  ct.id
+                );
+              }
+            }
+          });
         }
+
+        // Actualizar conteo de mensajes conocidos
+        cloudTickets.forEach(ct => {
+          knownTicketMessageCounts[ct.id] = (ct.messages || []).length;
+        });
+        hasInitializedNotifs = true;
 
         localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(cloudTickets));
         renderPublicTickets();
@@ -448,6 +622,10 @@ const ayloxTickets = (function() {
     const tickets = getTickets();
     tickets.unshift(newTicket);
     saveTickets(tickets);
+
+    knownTicketMessageCounts[newTicket.id] = newTicket.messages.length;
+    notifyChange({ newTicket });
+    requestNotificationPermission();
 
     // Subir a la nube si Firebase está configurado
     pushTicketToCloud(newTicket);
@@ -638,6 +816,10 @@ const ayloxTickets = (function() {
     ticket.messages.push(newMsg);
     saveTickets(tickets);
 
+    knownTicketMessageCounts[ticket.id] = ticket.messages.length;
+    notifyChange({ ticketId: ticket.id, newMessage: newMsg });
+    requestNotificationPermission();
+
     // Subir mensaje a la nube
     pushTicketToCloud(ticket);
 
@@ -657,9 +839,11 @@ const ayloxTickets = (function() {
         };
         ticket.messages.push(autoReply);
         saveTickets(tickets);
+        knownTicketMessageCounts[ticket.id] = ticket.messages.length;
+        notifyChange({ ticketId: ticket.id, newMessage: autoReply });
         pushTicketToCloud(ticket);
         renderChatMessages();
-        if (typeof ayloxSound !== 'undefined') ayloxSound.play('alert');
+        if (typeof ayloxSound !== 'undefined') ayloxSound.play('ticket_alert');
       }, 1500);
     }
   }
@@ -896,6 +1080,7 @@ const ayloxTickets = (function() {
     document.getElementById('staffPinInput').value = '';
 
     openStaffDashboard();
+    requestNotificationPermission();
     ayloxSecurity.logEvent(`Sesión iniciada con éxito como: ${currentStaffRole.toUpperCase()}`);
     ayloxApp.showToast(`¡Bienvenido a AYLOX IOS 18 (${currentStaffRole === 'dueno' ? 'DUEÑO' : 'VENDEDOR 1'})!`, 'success');
   }
@@ -1102,6 +1287,14 @@ const ayloxTickets = (function() {
 
   // Inicializar al cargar
   document.addEventListener('DOMContentLoaded', () => {
+    updateWebNotifUI();
+    const initTickets = getTickets();
+    initTickets.forEach(t => {
+      knownTicketMessageCounts[t.id] = (t.messages || []).length;
+    });
+    lastKnownTicketsCount = initTickets.length;
+    hasInitializedNotifs = true;
+
     renderPublicTickets();
     
     // Iniciar sondeo en segundo plano con la nube cada 4 segundos
@@ -1111,6 +1304,17 @@ const ayloxTickets = (function() {
 
     // Sincronización inicial
     syncFromCloud();
+
+    // Escuchar cambios entre pestañas
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY_TICKETS) {
+        renderPublicTickets();
+        renderDashTickets();
+        if (currentActiveTicketId) {
+          renderChatMessages();
+        }
+      }
+    });
   });
 
   return {
@@ -1139,6 +1343,9 @@ const ayloxTickets = (function() {
     filterTickets,
     updateTicketStatus,
     deleteTicket,
-    exportTicketsJSON
+    exportTicketsJSON,
+    toggleWebNotifications,
+    testNotification,
+    requestNotificationPermission
   };
 })();
