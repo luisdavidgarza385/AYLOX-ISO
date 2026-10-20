@@ -804,7 +804,7 @@ const ayloxTickets = (function() {
     } else {
       btnPartner.className = 'py-2.5 rounded-xl border border-aylox-green bg-aylox-green/20 text-aylox-green text-xs font-bold transition flex items-center justify-center gap-2';
       btnOwner.className = 'py-2.5 rounded-xl border border-aylox-cardborder bg-aylox-card text-gray-400 text-xs font-bold hover:text-white transition flex items-center justify-center gap-2';
-      if (hint) hint.innerHTML = 'PIN de Vendedor por defecto: <strong>3333</strong> (Ventas)';
+      if (hint) hint.innerHTML = 'PIN de Vendedor 1 por defecto: <strong>3333</strong> (Vendedor 1)';
     }
   }
 
@@ -833,7 +833,7 @@ const ayloxTickets = (function() {
 
     openStaffDashboard();
     ayloxSecurity.logEvent(`Sesión iniciada con éxito como: ${currentStaffRole.toUpperCase()}`);
-    ayloxApp.showToast(`¡Bienvenido al Panel de Control (${currentStaffRole === 'dueno' ? 'DUEÑO' : 'VENDEDOR'})!`, 'success');
+    ayloxApp.showToast(`¡Bienvenido a AYLOX IOS 18 (${currentStaffRole === 'dueno' ? 'DUEÑO' : 'VENDEDOR 1'})!`, 'success');
   }
 
   function openStaffDashboard() {
@@ -851,7 +851,7 @@ const ayloxTickets = (function() {
       if (tabConfig) tabConfig.style.display = 'inline-block';
     } else {
       if (badge) {
-        badge.textContent = '🛡️ VENDEDOR AUTORIZADO (Atención & Ventas)';
+        badge.textContent = '🛡️ VENDEDOR 1 (Atención & Ventas)';
         badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-yellow-400 text-black';
       }
       // Ocultar pestaña de ajustes críticos a vendedores
