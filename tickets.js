@@ -20,9 +20,9 @@ const ayloxTickets = (function() {
     owner2Name: 'Dueño 2 — AYLOX IOS',
     owner2Phone: '50232509982',
     owner3Name: 'Línea de Activación Rápida',
-    owner3Phone: '584124020112',
-    binanceId: '789421054',
-    paypal: 'pagos@ayloxios.com',
+    owner3Phone: '50232509982',
+    binanceId: '1146199763',
+    paypal: 'https://paypal.me/davisiso',
     pinOwner: '1111',
     pinPartner: '2222'
   };
@@ -130,7 +130,7 @@ const ayloxTickets = (function() {
     }
     try {
       const parsed = JSON.parse(raw);
-      // Si tiene los números dummy antiguos, actualizar a los 2 dueños reales
+      // Asegurar números y cuentas reales de los dueños
       if (parsed.owner1Phone === '5215500000000' || !parsed.owner1Phone) {
         parsed.owner1Phone = DEFAULT_CONFIG.owner1Phone;
         parsed.owner1Name = DEFAULT_CONFIG.owner1Name;
@@ -138,6 +138,12 @@ const ayloxTickets = (function() {
       if (parsed.owner2Phone === '5215511112222' || !parsed.owner2Phone) {
         parsed.owner2Phone = DEFAULT_CONFIG.owner2Phone;
         parsed.owner2Name = DEFAULT_CONFIG.owner2Name;
+      }
+      if (parsed.binanceId === '789421054' || !parsed.binanceId) {
+        parsed.binanceId = DEFAULT_CONFIG.binanceId;
+      }
+      if (parsed.paypal === 'pagos@ayloxios.com' || !parsed.paypal) {
+        parsed.paypal = DEFAULT_CONFIG.paypal;
       }
       return { ...DEFAULT_CONFIG, ...parsed };
     } catch {
@@ -256,12 +262,15 @@ const ayloxTickets = (function() {
       return;
     }
 
+    const cleanDevice = device.replace(/&#x2F;/g, '/');
+    const cleanPlan = plan.replace(/&#x2F;/g, '/');
+
     const newTicket = {
       id: generateTicketId(),
       customerName: name,
       customerPhone: phone,
-      device: device,
-      plan: plan,
+      device: cleanDevice,
+      plan: cleanPlan,
       status: 'abierto',
       createdAt: new Date().toISOString(),
       assignedTo: 'Dueño & Socios',
@@ -270,7 +279,7 @@ const ayloxTickets = (function() {
           id: 'm_' + Date.now(),
           sender: 'system',
           author: 'AYLOX BOT OFICIAL',
-          text: `¡Hola ${name}! Tu ticket ${name} ha sido abierto en el sistema 24/7 de AYLOX IOS. El Dueño Principal o un Socio autorizado ya recibieron tu solicitud de "${plan}". Puedes escribir tus dudas aquí o pasar directamente a WhatsApp.`,
+          text: `¡Hola ${name}! Tu ticket #${newTicket?.id || 'AYL'} ha sido registrado y enviado al WhatsApp del Dueño (+502 3250 9982). Aquí tienes tu sala de chat para seguimiento en tiempo real.`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         },
         {
@@ -282,19 +291,39 @@ const ayloxTickets = (function() {
         }
       ]
     };
+    newTicket.messages[0].text = `¡Hola ${name}! Tu ticket #${newTicket.id} ha sido registrado y enviado al WhatsApp del Dueño (+502 3250 9982). Aquí tienes tu sala de chat para seguimiento en tiempo real.`;
 
     const tickets = getTickets();
     tickets.unshift(newTicket);
     saveTickets(tickets);
 
-    ayloxSecurity.logEvent(`Nuevo ticket ${newTicket.id} creado por ${name} (${device})`);
+    ayloxSecurity.logEvent(`Nuevo ticket ${newTicket.id} creado por ${name} (${cleanDevice})`);
     
+    // Preparar mensaje y abrir WhatsApp directamente al Dueño (+502 3250 9982)
+    const cfg = getConfig();
+    const waText = `¡Hola AYLOX IOS! 👋 Acabo de abrir un ticket en la web:\n` +
+                   `🎫 *Ticket:* #${newTicket.id}\n` +
+                   `👤 *Cliente:* ${name}\n` +
+                   `📱 *WhatsApp:* ${phone}\n` +
+                   `🍏 *Dispositivo:* ${cleanDevice}\n` +
+                   `⭐ *Plan de Interés:* ${cleanPlan}\n` +
+                   `💬 *Mensaje:* ${message}`;
+
+    const waUrl = `https://wa.me/${cfg.owner2Phone}?text=${encodeURIComponent(waText)}`;
+    
+    // Disparar WhatsApp al dueño inmediatamente
+    try {
+      window.open(waUrl, '_blank');
+    } catch (e) {
+      console.warn('Popup blocked, available via button', e);
+    }
+
     // Reset form y cerrar modal
     document.getElementById('newTicketForm').reset();
     closeNewTicketModal();
 
     if (typeof ayloxSound !== 'undefined') ayloxSound.play('success');
-    ayloxApp.showToast(`¡Ticket #${newTicket.id} creado con éxito! Abriendo chat...`, 'success');
+    ayloxApp.showToast(`¡Ticket #${newTicket.id} creado! Enviando información a tu WhatsApp...`, 'success');
 
     // Abrir directamente la sala de chat de este ticket
     setTimeout(() => {
@@ -318,8 +347,8 @@ const ayloxTickets = (function() {
 
     // Actualizar cabecera del chat
     document.getElementById('chatTicketTitle').textContent = `Ticket #${ticket.id}`;
-    document.getElementById('chatPlanInfo').textContent = ticket.plan;
-    document.getElementById('chatDeviceInfo').textContent = ticket.device;
+    document.getElementById('chatPlanInfo').textContent = (ticket.plan || '').replace(/&#x2F;/g, '/');
+    document.getElementById('chatDeviceInfo').textContent = (ticket.device || '').replace(/&#x2F;/g, '/');
 
     const statusBadge = document.getElementById('chatTicketStatusBadge');
     if (statusBadge) {
@@ -490,13 +519,13 @@ const ayloxTickets = (function() {
     if (type === 'pagos') {
       text = `💳 *MÉTODOS DE PAGO OFICIALES AYLOX IOS*\n` +
              `• Binance Pay ID: ${cfg.binanceId} (USDT al instante)\n` +
-             `• PayPal Internacional: ${cfg.paypal}\n` +
-             `• SPEI / Transferencia Bancaria Directa: Solicita los datos de cuenta.\n` +
-             `Una vez realizado tu pago, envía tu comprobante aquí o al WhatsApp del Dueño para activar tu certificado de inmediato.`;
+             `• PayPal Oficial: ${cfg.paypal}\n` +
+             `• Transferencia Bancaria Directa: Solicita los datos de cuenta.\n` +
+             `Una vez realizado tu pago, envía tu comprobante a este chat o al WhatsApp oficial (+${cfg.owner2Phone}) para activar tu certificado de inmediato.`;
     } else if (type === 'whatsapp') {
       text = `📲 *CONTINUEMOS POR WHATSAPP*\n` +
-             `Hemos asignado tu ticket #${currentActiveTicketId} al WhatsApp directo del Dueño.\n` +
-             `Haz clic en el botón verde superior "Pasar a WhatsApp" o escríbenos a: +${cfg.owner1Phone}`;
+             `Hemos asignado tu ticket #${currentActiveTicketId} al WhatsApp del Dueño.\n` +
+             `Haz clic en el botón verde superior "Pasar a WhatsApp" o escríbenos directamente a: +${cfg.owner2Phone}`;
     } else if (type === 'instalacion') {
       text = `📦 *GUÍA RÁPIDA DE INSTALACIÓN AYLOX IOS*\n` +
              `1. Te enviaremos tu certificado (.p12 y .mobileprovision).\n` +
@@ -516,20 +545,27 @@ const ayloxTickets = (function() {
   }
 
   // Exportar el ticket actual con formato para WhatsApp
-  function exportCurrentTicketToWhatsapp() {
+  function exportCurrentTicketToWhatsapp(targetPhone = null) {
     if (!currentActiveTicketId) return;
     const tickets = getTickets();
     const ticket = tickets.find(t => t.id === currentActiveTicketId);
     if (!ticket) return;
 
     const cfg = getConfig();
-    const msg = `¡Hola AYLOX IOS! Te contacto por mi Ticket #${ticket.id}:\n` +
-                `👤 Cliente: ${ticket.customerName}\n` +
-                `📱 Dispositivo: ${ticket.device}\n` +
-                `⭐ Plan: ${ticket.plan}\n` +
-                `💬 Consulta: ${ticket.messages[1] ? ticket.messages[1].text : 'Quiero comprar'}`;
+    const phoneToSend = targetPhone || cfg.owner2Phone; // Por defecto al dueño 50232509982
+    const cleanDevice = ticket.device.replace(/&#x2F;/g, '/');
+    const cleanPlan = ticket.plan.replace(/&#x2F;/g, '/');
+    const clientMsg = ticket.messages[1] ? ticket.messages[1].text : 'Quiero comprar';
 
-    const url = `https://wa.me/${cfg.owner1Phone}?text=${encodeURIComponent(msg)}`;
+    const msg = `¡Hola AYLOX IOS! 👋 Te contacto por mi Ticket #${ticket.id}:\n` +
+                `🎫 *Ticket:* #${ticket.id}\n` +
+                `👤 *Cliente:* ${ticket.customerName}\n` +
+                `📱 *WhatsApp:* ${ticket.customerPhone}\n` +
+                `🍏 *Dispositivo:* ${cleanDevice}\n` +
+                `⭐ *Plan:* ${cleanPlan}\n` +
+                `💬 *Mensaje:* ${clientMsg}`;
+
+    const url = `https://wa.me/${phoneToSend}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }
 

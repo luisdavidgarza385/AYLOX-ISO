@@ -779,18 +779,18 @@
               <i class="fa-brands fa-bitcoin"></i>
             </div>
             <h3 class="text-lg font-bold font-cyber text-white">Binance Pay & USDT</h3>
-            <p class="text-xs text-gray-400 mt-1">Cero comisiones. Acreditación automática al instante mediante Binance Pay ID o red TRC20/BEP20.</p>
+            <p class="text-xs text-gray-400 mt-1">Cero comisiones. Acreditación automática al instante mediante Binance Pay ID oficial.</p>
             
             <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <span class="text-gray-300 font-mono text-[11px] truncate" id="displayBinanceId">Pay ID: 789421054</span>
-              <button onclick="ayloxApp.copyText('789421054', 'Binance Pay ID')" class="text-aylox-green hover:text-white p-1" title="Copiar ID">
+              <span class="text-gray-300 font-mono text-[11px] truncate font-bold" id="displayBinanceId">Pay ID: 1146199763</span>
+              <button onclick="ayloxApp.copyText('1146199763', 'Binance Pay ID')" class="text-aylox-green hover:text-white p-1" title="Copiar ID">
                 <i class="fa-solid fa-copy"></i>
               </button>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
             <span>Comisión: 0%</span>
-            <span class="text-aylox-green font-semibold">Inmediato</span>
+            <span class="text-aylox-green font-semibold">Instantáneo</span>
           </div>
         </div>
 
@@ -800,19 +800,19 @@
             <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4">
               <i class="fa-brands fa-paypal"></i>
             </div>
-            <h3 class="text-lg font-bold font-cyber text-white">PayPal Internacional</h3>
-            <p class="text-xs text-gray-400 mt-1">Paga de forma protegida con saldo PayPal o tarjetas de débito/crédito internacionales.</p>
+            <h3 class="text-lg font-bold font-cyber text-white">PayPal Oficial</h3>
+            <p class="text-xs text-gray-400 mt-1">Paga de forma rápida y protegida con tu cuenta PayPal o tarjeta internacional.</p>
             
             <div class="mt-4 p-2.5 rounded-lg bg-aylox-black border border-aylox-cardborder text-xs flex items-center justify-between">
-              <span class="text-gray-300 font-mono text-[11px] truncate" id="displayPaypal">pagos@ayloxios.com</span>
-              <button onclick="ayloxApp.copyText('pagos@ayloxios.com', 'Correo de PayPal')" class="text-aylox-green hover:text-white p-1" title="Copiar Correo">
+              <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green hover:underline font-mono text-[11px] truncate font-bold" id="displayPaypal">paypal.me/davisiso</a>
+              <button onclick="ayloxApp.copyText('https://paypal.me/davisiso', 'Enlace de PayPal')" class="text-aylox-green hover:text-white p-1" title="Copiar Enlace">
                 <i class="fa-solid fa-copy"></i>
               </button>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-aylox-cardborder flex items-center justify-between text-[11px] text-gray-400">
-            <span>Modo: Amigos/Familia</span>
-            <span class="text-aylox-green font-semibold">1-5 min</span>
+            <span>Link Directo</span>
+            <a href="https://paypal.me/davisiso" target="_blank" class="text-aylox-green font-semibold hover:underline">Abrir PayPal ↗</a>
           </div>
         </div>
 
@@ -1327,10 +1327,14 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- Direct WhatsApp Transfer Button -->
-          <button id="chatExportWhatsappBtn" onclick="ayloxTickets.exportCurrentTicketToWhatsapp()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 hover:bg-green-500 text-white transition flex items-center gap-1.5 shadow">
-            <i class="fa-brands fa-whatsapp"></i>
-            <span class="hidden sm:inline">Pasar a WhatsApp</span>
+          <!-- Direct WhatsApp Transfer Buttons to both owners -->
+          <button onclick="ayloxTickets.exportCurrentTicketToWhatsapp('50232509982')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 hover:bg-green-500 text-white transition flex items-center gap-1.5 shadow" title="Enviar al Dueño (+502 3250 9982)">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>WhatsApp Dueño 🇬🇹</span>
+          </button>
+          <button onclick="ayloxTickets.exportCurrentTicketToWhatsapp('584124020112')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-aylox-card hover:bg-aylox-green/20 text-aylox-green border border-aylox-green/40 transition flex items-center gap-1 shadow" title="Enviar al Dueño (+58 412-4020112)">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span class="hidden sm:inline">Dueño 🇻🇪</span>
           </button>
           <button onclick="ayloxTickets.closeChatModal()" class="text-gray-400 hover:text-white p-2 text-lg">
             <i class="fa-solid fa-xmark"></i>

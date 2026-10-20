@@ -56,7 +56,6 @@ const ayloxSecurity = (function() {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;')
       .replace(/javascript:/gi, '')
       .replace(/onerror/gi, '')
       .replace(/onload/gi, '')
